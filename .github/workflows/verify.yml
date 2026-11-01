@@ -31,7 +31,7 @@ jobs:
         run: node verify/host.test.mjs
 
       - name: 语料覆盖审计（金句必须逐字命中）
-        run: node scripts/audit-corpus-coverage.mjs
+        run: node tools/audit-corpus-coverage.mjs
 
       - name: 打包清单核对（不含 .dsh-dev / assets/raw / verify）
         run: |

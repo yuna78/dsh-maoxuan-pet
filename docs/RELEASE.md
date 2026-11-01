@@ -8,9 +8,9 @@
 | 项 | 现状（2026-11-01 核对） |
 |---|---|
 | 包名 | `dsh-plugin-maoxuan-pet`（unscoped，npm 上未占用） |
-| 版本 | `0.2.0` |
+| 版本 | `0.2.1` |
 | 代码许可 | MIT（`LICENSE`）；语料与立绘的非 MIT 声明见 `NOTICE` |
-| 打包清单 | `npm pack --dry-run` → 57 files / 4.2 MB（含 33 篇语料） |
+| 打包清单 | `npm pack --dry-run` → 59 files / 1.26 MB（含 33 篇语料；0.2.1 起立绘降到 256×539，包体从 4.2 MB 降下来） |
 | GitHub 账号 | `gh auth status` → `yuna78`（scopes 含 `repo`） |
 | npm 凭据 | **当前 `npm whoami` 返回 401，必须先 `npm login` 或换 token** |
 | 市场收录机制 | awesome-dsh-plugin 索引 **npm 包**（`versions[].source.type = npm`），并用 `package.json` 的 `repository.url` 关联 GitHub 仓；**没有投稿表单**，发布后由爬虫收录 |
@@ -19,7 +19,7 @@
 
 ```bash
 node verify/smoke.mjs && node verify/contract.mjs && node verify/host.test.mjs
-node scripts/audit-corpus-coverage.mjs          # 金句逐字命中 33/33 才算健康
+node tools/audit-corpus-coverage.mjs          # 金句逐字命中 33/33 才算健康
 npm pack --dry-run | tail -20                   # 确认没有 .dsh-dev/、assets/raw/、verify/
 grep -rInE "sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}" --include="*.js" --include="*.json" . | grep -v node_modules
 grep -rIn "/Users/" --include="*.md" --include="*.js" . | grep -v node_modules   # 不应出现本机绝对路径
@@ -93,7 +93,7 @@ cd .. && node build-registry.mjs --write    # 重算 registry.json / README 表�
 node -e "const r=require('./registry.json');console.log(r.plugins.find(p=>p.name==='dsh-plugin-maoxuan-pet'))"
 ```
 
-期望字段：`openSource: true`、`npm: "0.2.0"`、`market: { title: "yuna78/dsh-maoxuan-pet", version: "0.2.0" }`。
+期望字段：`openSource: true`、`npm: "0.2.1"`、`market: { title: "yuna78/dsh-maoxuan-pet", version: "0.2.1" }`。
 
 ## 5. 版本号规则
 

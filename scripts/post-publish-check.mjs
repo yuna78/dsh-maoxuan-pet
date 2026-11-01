@@ -3,6 +3,7 @@
 //
 //   node scripts/post-publish-check.mjs            # 只报告，永远 exit 0（适合人工看）
 //   node scripts/post-publish-check.mjs --strict   # 版本/元数据不符或市场未收录 → exit 1（适合 CI/发布门禁）
+//   MARKET_TIMEOUT_MS=300000 node scripts/post-publish-check.mjs   # 慢网下放宽市场索引超时（默认 180s）
 //
 // 不写任何文件，不读取凭据，纯 HTTP。
 import { readFileSync } from 'node:fs';
@@ -16,8 +17,11 @@ const NPM = `https://registry.npmjs.org/${pkg.name}`;
 const MARKET = 'https://awesome-dsh-plugin.com/index.json';
 
 const problems = [];
-const get = async (url) => {
-  const res = await fetch(url, { signal: AbortSignal.timeout(60_000) });
+// 市场索引有 3.3 MB，站点在慢网/镜像环境下 60s 拉不完，单独给 180s；npm 元数据 60s 足够。
+const NPM_TIMEOUT = 60_000;
+const MARKET_TIMEOUT = Number(process.env.MARKET_TIMEOUT_MS ?? 180_000);
+const get = async (url, timeout = NPM_TIMEOUT) => {
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
   if (!res.ok) throw new Error(`${res.status} ${url}`);
   return res.json();
 };
@@ -46,7 +50,7 @@ try {
 
 // 2. 市场索引是否收录
 try {
-  const market = await get(MARKET);
+  const market = await get(MARKET, MARKET_TIMEOUT);
   const hit = (market.plugins ?? []).find((p) => p.name === pkg.name);
   if (!hit) {
     console.log(`\n[market] 尚未收录（索引共 ${(market.plugins ?? []).length} 个插件）——发布 npm 后等爬虫，通常几分钟到一天`);

@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 0.2.1 — 2026-11-01
+
+上架插件市场后的首个维护版：图标重做 + 整包瘦身 + 打包门禁补强。
+
+### 图标
+- 包内 `assets/icon.svg` 换成「红皮书」造型：米白底、深红书壳、烫金五角星与书名条；按插件面板卡片实际 36px 校过，缩到 36px 仍能读成一本红皮书。
+- 新增 `assets/icon-256.png`（256×256 RGBA，17 KB），给 [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 条目的 `icon:` 用——市场只收 GitHub 托管位图，不收 SVG。
+
+### 体积
+- 四帧立绘 640×1348 → 256×539（UI 展示高 132px，2x 屏幕足够）：4 张合计 **2.96 MB → 603 KB**。
+- `npm pack` 整包 **4.2 MB → 约 1.2 MB**（59 files），安装与首屏都更快；README / 市场条目用的大图 `docs/screenshot-hero.png` 保留。
+
+### 打包与发布门禁
+- `scripts/audit-corpus-coverage.mjs` 迁到 `tools/`：`scripts/` 是开发脚本，不该进 npm 包；全局开源契约检查此前因此 1 项 FAIL，现在是 0 FAIL / 1 WARN（WARN 已由下一条解决）。
+- 新增 `prepublishOnly`：发布前自动跑 `verify/smoke.mjs` + `verify/contract.mjs`，防手滑发坏版本。
+- `scripts/post-publish-check.mjs`：市场索引有 3.3 MB，超时从 60s 提到 180s（可用 `MARKET_TIMEOUT_MS` 覆盖），慢网下 `--strict` 不再误红。
+- 仓库根新增 `screenshots.json`（`["docs/screenshot-hero.png"]`），喂给 dsh-market 详情页的 AppStore 式截图；以后换图只需往本仓 push，不用再来提 PR。
+
+### 文档
+- 新增英文 README（`README.en.md`），中文 README 顶部加英文入口。
+- README 的资产尺寸、审计脚本路径同步更新；`assets/PROVENANCE.md` 记录交付尺寸与图标改版。
+
 ## 0.2.0 — 2026-11-01
 
 首个公开版本。

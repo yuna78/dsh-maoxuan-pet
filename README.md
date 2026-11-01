@@ -10,7 +10,7 @@
 
 | 需求 | 实现 |
 |---|---|
-| 宠物形态、鲸鱼娘、红军制服、手捧毛选 | `assets/` 里 4 帧 AI 立绘（idle / talk / blink / read，640×1348 RGBA，红封面竖排「毛泽东选集」可辨），`client.js` 在 `shell.overlay` 槽位渲染悬浮宠物 |
+| 宠物形态、鲸鱼娘、红军制服、手捧毛选 | `assets/` 里 4 帧 AI 立绘（idle / talk / blink / read，256×539 RGBA，红封面竖排「毛泽东选集」可辨），`client.js` 在 `shell.overlay` 槽位渲染悬浮宠物 |
 | 每小时帮我读毛选 | Host 定时器按小时读 `corpus/` 里的下一篇（轮转、避开刚读过的） |
 | 每小时生成思想 / PUA 我的话，出现在气泡里 | 每次生成 `spawn` 一个 `dsh --profile headless` 对话，拿到结构化 JSON 后推给气泡 |
 | 有个 preset，能直接问「根据毛选我该怎么做」 | `maoxuan-pet`「毛选创业参谋」preset + 运行时注册的 `maoxuan-vademecum` skill 指向内置语料 |
@@ -68,7 +68,7 @@
 见 [docs/CONTENT-FRAMEWORK.md](docs/CONTENT-FRAMEWORK.md)。语料能不能支撑 Quote 模板，跑一条审计就知道：
 
 ```bash
-node scripts/audit-corpus-coverage.mjs   # 33 篇：金句逐字命中 33/33，节选可用 32/33
+node tools/audit-corpus-coverage.mjs   # 33 篇：金句逐字命中 33/33，节选可用 32/33
 ```
 
 ### 界面行为（这一版按用户逐条反馈定的）
@@ -169,7 +169,7 @@ node --check client.js
 |---|---|
 | `--dump-config` 组装 | 插件行与 `preset-maoxuan-pet` 都在组合后的配置里 |
 | `GET /api/dsh-maoxuan-pet.state` | 200，`corpus.count=33`，`nextRunAt` 已排定 |
-| `GET /api/dsh-maoxuan-pet.asset?name=idle` | 200，`image/png`，640×1348 RGBA |
+| `GET /api/dsh-maoxuan-pet.asset?name=idle` | 200，`image/png`，256×539 RGBA |
 | 页面 boot payload | 含 `dsh-plugin-maoxuan-pet/client.js`，实际拉到的 bundle 里含本插件代码且可解析 |
 | `POST /api/dsh-maoxuan-pet.generate`（真实 headless） | 61s，`mode: "headless"`，返回结构化气泡（篇名/金句/思想/启示/督促/动作） |
 | 失败降级 | 无凭据时 5.5s 内降级为 `mode: "offline"` 并写入 `lastError` |

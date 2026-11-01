@@ -11,7 +11,7 @@
 
 ```bash
 dsh plugin --profile web add dsh-plugin-maoxuan-pet
-# 想固定版本：dsh-plugin-maoxuan-pet@0.2.0
+# 想固定版本：dsh-plugin-maoxuan-pet@0.2.1
 dsh plugin --profile web list          # 确认出现在列表里
 ```
 

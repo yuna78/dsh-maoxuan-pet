@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-maoxuan-pet",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "DSH 悬浮宠物「鲸鱼娘·小毛」：每小时读一篇毛选，给创业中的你说一句能动手的督促；内置毛选公开语料与 maoxuan-pet preset。",
   "keywords": [
     "dsh",
@@ -52,7 +52,7 @@
     "corpus/",
     "skill/",
     "docs/",
-    "scripts/audit-corpus-coverage.mjs",
+    "tools/",
     "README.md",
     "CHANGELOG.md",
     "README.en.md",
@@ -64,7 +64,8 @@
     "corpus": "node scripts/fetch-corpus.mjs",
     "test": "node verify/smoke.mjs && node verify/contract.mjs && node verify/host.test.mjs",
     "test:contract": "node verify/contract.mjs",
-    "audit:corpus": "node scripts/audit-corpus-coverage.mjs"
+    "audit:corpus": "node tools/audit-corpus-coverage.mjs",
+    "prepublishOnly": "node verify/smoke.mjs && node verify/contract.mjs"
   },
   "dsh": {
     "bundle": {

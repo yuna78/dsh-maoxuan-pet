@@ -3,7 +3,7 @@
 //   - quote   : article.quote must be verbatim in corpus/articles/<id>.md
 //   - excerpt : extractExcerpt() must find a usable window (40–90 chars)
 // Read-only, no network, no model calls.
-// Usage: node scripts/audit-corpus-coverage.mjs [--json]
+// Usage: node tools/audit-corpus-coverage.mjs [--json]
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';

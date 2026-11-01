@@ -73,8 +73,8 @@ excerpt** and labels it `离线摘录` in the footer — it never invents a quot
 node verify/smoke.mjs        # 24 structural checks
 node verify/contract.mjs     # 38 pure-function tests
 node verify/host.test.mjs    # 18 fake-ctx end-to-end tests (no network, no subprocess)
-node scripts/audit-corpus-coverage.mjs   # quote must be verbatim in all 33 essays
-npm pack --dry-run           # 57 files, no .dsh-dev / assets/raw / verify
+node tools/audit-corpus-coverage.mjs   # quote must be verbatim in all 33 essays
+npm pack --dry-run           # 59 files / 1.3 MB, no .dsh-dev / assets/raw / verify
 ```
 
 CI runs the same set on Node 22 and 24. See [verify/README.md](verify/README.md).

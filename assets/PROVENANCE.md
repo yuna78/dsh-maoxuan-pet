@@ -20,8 +20,8 @@
    - talk → `assets/raw/talk-final.png`
    - blink → `assets/raw/blink-final.png`
    - read → `assets/raw/read-v3.png`
-4. **统一画面**：四帧用**同一个裁剪框**（原图 1024×1536 的 `(160, 0, 880, 1516)`）裁切，先把透明区域外扩成相邻像素颜色（避免缩放时白边渗入轮廓），再 Lanczos 等比缩放到 **640×1348**，四帧共用同一画布与脚底线，切换帧时身体不跳。
-5. `assets/icon.svg`：**手写 SVG**（纯几何形状，非 AI 生成），红底圆角方块 + 暖白圆盘 + 蓝色鲸鱼尾 + 红五星，1506 字节。
+4. **统一画面**：四帧用**同一个裁剪框**（原图 1024×1536 的 `(160, 0, 880, 1516)`）裁切，先把透明区域外扩成相邻像素颜色（避免缩放时白边渗入轮廓），再 Lanczos 等比缩放到 **640×1348** 作为母版；交付版再降到 **256×539**（UI 展示高 132px，2x 屏幕够用，四帧共用同一画布与脚底线，切换帧时身体不跳）。
+5. `assets/icon.svg`：**手写 SVG**（纯几何形状，非 AI 生成），米白底 + 红皮书 + 烫金五角星与书名条，2326 字节；另导出 `assets/icon-256.png`（256×256 RGBA）供市场条目 `icon:` 使用（市场只收 GitHub 托管位图，不收 SVG）。
 
 原始中间产物保留在 `assets/raw/`（本仓库 `.gitignore` 已忽略该目录，不随 git 提交；如需瘦身可直接删除）。
 
@@ -53,11 +53,11 @@
 
 | 文件 | 像素 | 色彩/通道 | `file` 输出 | 说明 |
 | --- | --- | --- | --- | --- |
-| `assets/pet-idle.png` | 640×1348 | RGBA，带 alpha | PNG image data, 640 x 1348, 8-bit/color RGBA, non-interlaced | 站姿抱书微笑，封面竖排「毛泽东选集」可辨 |
-| `assets/pet-talk.png` | 640×1348 | RGBA，带 alpha | 同上 | 同姿势张嘴说话，封面题字保留（字号比 idle 略小、略挤） |
-| `assets/pet-blink.png` | 640×1348 | RGBA，带 alpha | 同上 | 闭眼微笑，与 idle 仅表情不同 |
-| `assets/pet-read.png` | 640×1348 | RGBA，带 alpha | 同上 | 低头看书，书摊开（见下方缺陷第 2 条） |
-| `assets/icon.svg` | viewBox 512×512，1506 字节 | 纯几何矢量 | — | 红底 + 暖白圆盘 + 鲸鱼尾 + 红五星，手写 |
+| `assets/pet-idle.png` | 256×539 | RGBA，带 alpha | PNG image data, 256 x 539, 8-bit/color RGBA, non-interlaced | 站姿抱书微笑，封面竖排「毛泽东选集」可辨 |
+| `assets/pet-talk.png` | 256×539 | RGBA，带 alpha | 同上 | 同姿势张嘴说话，封面题字保留（字号比 idle 略小、略挤） |
+| `assets/pet-blink.png` | 256×539 | RGBA，带 alpha | 同上 | 闭眼微笑，与 idle 仅表情不同 |
+| `assets/pet-read.png` | 256×539 | RGBA，带 alpha | 同上 | 低头看书，书摊开（见下方缺陷第 2 条） |
+| `assets/icon.svg` | viewBox 512×512，2326 字节 | 纯几何矢量 | — | 米白底 + 红皮书 + 烫金五角星 + 书名条，手写；同款导出为 `assets/icon-256.png` |
 
 每张 PNG 都用 `read_image` 逐张看过后才采用；另外把四帧合成到棋盘格背景上放大检查轮廓边缘，确认透明通道有效、无白色描边、脚底与发梢没有被裁断。
 
@@ -88,5 +88,6 @@ python3 ~/.codex/skills/gpt-image/scripts/gen_image.py --size 1024x1536 \
 #    image=assets/raw/idle-text-v2.png, background=transparent, size=1024x1536
 #    prompt=<见上文各帧 prompt>
 
-# 3) 统一裁剪 640×1348、透明区域颜色外扩、Lanczos 缩放（Pillow）
+# 3) 统一裁剪 640×1348 母版、透明区域颜色外扩、Lanczos 缩放（Pillow）
+# 4) 交付版再等比降到 256×539，PNG optimize=True（四帧共 603 KB，0.2.1 起）
 ```
