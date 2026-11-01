@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-maoxuan-pet",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "DSH 悬浮宠物「鲸鱼娘·小毛」：每小时读一篇毛选，给创业中的你说一句能动手的督促；内置毛选公开语料与 maoxuan-pet preset。",
   "keywords": [
     "dsh",

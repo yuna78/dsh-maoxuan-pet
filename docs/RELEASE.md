@@ -8,7 +8,7 @@
 | 项 | 现状（2026-11-01 核对） |
 |---|---|
 | 包名 | `dsh-plugin-maoxuan-pet`（unscoped，npm 上未占用） |
-| 版本 | `0.2.1` |
+| 版本 | `0.2.2` |
 | 代码许可 | MIT（`LICENSE`）；语料与立绘的非 MIT 声明见 `NOTICE` |
 | 打包清单 | `npm pack --dry-run` → 59 files / 1.26 MB（含 33 篇语料；0.2.1 起立绘降到 256×539，包体从 4.2 MB 降下来） |
 | GitHub 账号 | `gh auth status` → `yuna78`（scopes 含 `repo`） |
@@ -93,7 +93,7 @@ cd .. && node build-registry.mjs --write    # 重算 registry.json / README 表�
 node -e "const r=require('./registry.json');console.log(r.plugins.find(p=>p.name==='dsh-plugin-maoxuan-pet'))"
 ```
 
-期望字段：`openSource: true`、`npm: "0.2.1"`、`market: { title: "yuna78/dsh-maoxuan-pet", version: "0.2.1" }`。
+期望字段：`openSource: true`、`npm: "0.2.2"`、`market: { title: "yuna78/dsh-maoxuan-pet", version: "0.2.2" }`。
 
 ## 5. 版本号规则
 
