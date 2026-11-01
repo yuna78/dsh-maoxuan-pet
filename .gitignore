@@ -5,3 +5,4 @@ node_modules/
 assets/raw/
 .DS_Store
 *.tgz
+desktop/build/

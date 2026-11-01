@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>dev.yuna.dsh-maoxuan-pet.shell</string>
+	<key>CFBundleName</key>
+	<string>maoxuan-pet</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<!-- 透明窗要画的宿主数据走 http://127.0.0.1，必须放开 ATS -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>

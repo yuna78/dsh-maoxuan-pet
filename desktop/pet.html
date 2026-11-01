@@ -1,0 +1,415 @@
+<!doctype html>
+<!--
+  dsh-plugin-maoxuan-pet · 桌面壳渲染页
+
+  学 dsh-tauri-pet 的窗口思路，但进程独立于 DSH：
+  宿主数据由 Swift 原生层轮询后经 window.__petState() 注入（绕开 WKWebView 跨域），
+  页面只负责画「鲸鱼娘·小毛」+ 红皮书卡片，并把可交互矩形上报给原生层做点击穿透。
+  视觉与交互语义与 client.js（web 宠物）保持一致。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;overflow:hidden}
+  body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#ffe9d6;font-size:13px;line-height:1.6}
+  *{box-sizing:border-box}
+  #stage{position:absolute;right:44px;bottom:56px}
+  .mp-anchor{position:relative;display:flex;flex-direction:column;align-items:center}
+  .mp-pet{position:relative;z-index:1;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;cursor:grab;user-select:none;transition:transform .25s ease}
+  .mp-pet:active{cursor:grabbing}
+  .mp-pet:hover{transform:translateY(-3px)}
+  .mp-img{display:block;height:132px;width:auto;max-width:140px;object-fit:contain;filter:drop-shadow(0 10px 16px #050b14aa)}
+  .mp-img[data-talking="on"]{animation:mp-bob 1.6s ease-in-out infinite}
+  .mp-fallback{height:132px;width:100px;filter:drop-shadow(0 10px 16px #050b14aa)}
+  .mp-tag{margin-top:2px;font-size:10px;font-weight:700;letter-spacing:.06em;color:#ffe2bd;background:#5c0f0fd9;border:1px solid #ffd9a833;border-radius:999px;padding:2px 8px;white-space:nowrap;backdrop-filter:blur(8px)}
+  .mp-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;background:#f6cf9a;box-shadow:0 0 6px #f6cf9aaa;vertical-align:1px}
+  .mp-dot[data-off="off"]{background:#fca5a5;box-shadow:0 0 6px #fca5a5aa}
+  .mp-bubble{position:absolute;z-index:2;right:calc(100% + 12px);bottom:30px;width:340px;animation:mp-in .16s ease-out}
+  .mp-card{position:relative;max-height:min(58vh,480px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#f6cf9a #5f1010dd;color:#fff3e4;border:1px solid #8f1616;border-radius:12px;background:linear-gradient(155deg,#b32323 0%,#941a1a 46%,#771111 100%);box-shadow:0 22px 54px #35040466,0 0 0 1px #ffd9a814 inset}
+  .mp-card::-webkit-scrollbar{width:8px;height:8px}
+  .mp-card::-webkit-scrollbar-track{background:#5f1010cc;border-radius:8px}
+  .mp-card::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#f7d9a4,#d09a3f);border-radius:8px;border:1px solid #5f1010}
+  .mp-card::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ffe9c4,#e0aa4d)}
+  .mp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:11px 0 0 11px;background:linear-gradient(180deg,#f7d9a4,#d09a3f 45%,#b8792a);opacity:.92}
+  .mp-tail{position:absolute;right:-5px;bottom:38px;width:10px;height:10px;background:#8f1616;border-right:1px solid #8f1616;border-top:1px solid #8f1616;transform:rotate(45deg)}
+  .mp-head{display:flex;align-items:center;gap:6px;padding:9px 8px 8px 14px;border-bottom:1px solid #ffd9a82e;cursor:grab}
+  .mp-head:active{cursor:grabbing}
+  .mp-state{flex:1;min-width:0;font-size:10.5px;font-weight:750;letter-spacing:.06em;color:#ffe0b6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mp-nav{border:0;background:none;color:#ffd9a8;font-size:15px;line-height:1;padding:1px 4px;cursor:pointer;border-radius:4px;opacity:.8}
+  .mp-nav:hover:not(:disabled){color:#fff8ee;opacity:1}
+  .mp-nav:disabled{opacity:.3;cursor:default}
+  .mp-close{border:0;background:none;color:#ffd9a8;font-size:16px;line-height:1;padding:2px 4px;cursor:pointer;border-radius:4px;opacity:.85}
+  .mp-close:hover{color:#fff8ee;opacity:1}
+  .mp-body{padding:10px 14px 11px 16px}
+  .mp-cite{display:flex;gap:9px;margin:0 0 8px}
+  .mp-rule{flex:0 0 auto;width:2px;border-radius:2px;background:#f6cf9a}
+  .mp-cite-main{min-width:0}
+  .mp-cite p{margin:0;font-size:13px;color:#fff8ee;white-space:pre-wrap;word-break:break-word}
+  .mp-cite[data-kind="summary"] .mp-rule{background:#f0b57a}
+  .mp-meta{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:10px;color:#f3cfa8}
+  .mp-meta b{font-weight:750;color:#ffe0b6}
+  .mp-pua{display:flex;gap:6px;margin:0 0 8px;font-size:13.5px;font-weight:750;color:#ffe7c2;letter-spacing:.01em}
+  .mp-pua span:first-child{color:#ffcf8a;font-size:15px;line-height:1.35;font-weight:800}
+  .mp-lesson{margin:0;font-size:12.5px;color:#ffeede}
+  .mp-lesson b{color:#ffd08a;font-weight:750}
+  .mp-axis{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:1px 6px;border-radius:4px;margin-right:6px;color:#5a1208;vertical-align:1px}
+  .mp-foot{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid #ffd9a82a}
+  .mp-src{flex:1;min-width:0;font-size:10px;color:#f0c9a2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mp-src a{color:#f0c9a2;text-decoration:none}
+  .mp-src a:hover{color:#fff8ee;text-decoration:underline}
+  .mp-offline{color:#f3cfa8;opacity:.9}
+  .mp-btn{border:0;background:none;padding:2px 3px;color:#ffe4c7;font:inherit;font-size:11.5px;font-weight:650;cursor:pointer;white-space:nowrap;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#ffd9a84d;opacity:.92}
+  .mp-btn:hover:not(:disabled){color:#fff8ee;text-decoration-color:#ffd9a8;opacity:1}
+  .mp-btn:disabled{opacity:.5;cursor:default}
+  .mp-loading{display:flex;align-items:center;gap:7px;color:#ffe7c2;font-size:12px;padding:6px 0}
+  .mp-spin{width:12px;height:12px;border-radius:50%;border:2px solid #ffd9a83d;border-top-color:#f6cf9a;animation:mp-rot .8s linear infinite}
+  .mp-empty{margin:0 0 8px;color:#ffe7c2;font-size:12.5px}
+  .mp-warn{margin:6px 0 0;font-size:10px;color:#ffd0d0}
+  .mp-badge{position:absolute;z-index:3;top:-7px;right:-7px;min-width:17px;height:17px;border-radius:9px;background:#f6cf9a;color:#6b1206;font-size:10px;font-weight:800;line-height:17px;text-align:center;padding:0 4px;box-shadow:0 4px 10px #2b040466}
+  .mp-menu{position:absolute;z-index:9;left:0;top:100%;min-width:96px;border:1px solid #8f1616;border-radius:8px;background:#5c0f0f;box-shadow:0 10px 24px #00000055;padding:4px;animation:mp-in .12s ease-out}
+  .mp-menu button{display:block;width:100%;border:0;background:none;color:#ffe4c7;font:inherit;font-size:11.5px;text-align:left;padding:5px 8px;border-radius:5px;cursor:pointer;white-space:nowrap}
+  .mp-menu button:hover{background:#7a1616;color:#fff8ee}
+  @keyframes mp-in{from{opacity:0;transform:translateY(4px) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes mp-rot{to{transform:rotate(360deg)}}
+  @keyframes mp-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  @media (prefers-reduced-motion: reduce){
+    body *{animation:none!important;transition:none!important}
+    .mp-pet:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="mp-anchor" id="anchor">
+    <div class="mp-pet" id="pet" role="button" tabindex="0" aria-label="鲸鱼娘小毛"></div>
+  </div>
+</div>
+<script>
+'use strict';
+
+// --- 原生桥 ----------------------------------------------------------------
+const native = window.webkit?.messageHandlers?.pet;
+const send = (msg) => { try { native?.postMessage(msg); } catch { /* 桥断了就静默 */ } };
+
+// --- 状态 ------------------------------------------------------------------
+let env = Object.assign({ origin: 'http://127.0.0.1:3081' }, window.__petEnv || null);
+let state = null;          // 最近一次宿主快照
+let offline = false;       // 原生层最近一次轮询失败
+let busy = false;          // 本端触发的「再督促」进行中
+let open = false, pinned = null;
+let seen = null, autoFloor = null;
+const closedIds = new Set();
+const marked = new Set();
+let spriteKey = '';
+let cardKey = '';
+let ctxOpen = false;
+
+const AXIS_COLOR = { 客户:'#f7d9a4', 项目:'#f0b478', 组织:'#e9c887', 现金流:'#e8ac52', 决策:'#efd9b6', 自律:'#d7a76b' };
+const PET_TAG = document.getElementById('pet');
+
+/** v1 气泡（quote/thought/insight/nag/action）兼容成形。 */
+function shape(bubble) {
+  if (!bubble) return null;
+  if (bubble.cite && typeof bubble.cite.text === 'string') return bubble;
+  return {
+    ...bubble,
+    template: bubble.quote ? 'quote' : 'summary',
+    cite: { kind: bubble.quote ? 'quote' : 'summary', label: bubble.quote ? '原文' : '小毛概括', text: bubble.quote || bubble.thought || '' },
+    axis: bubble.axis || '项目',
+    pua: bubble.pua || bubble.nag || '',
+    lesson: bubble.lesson || bubble.insight || bubble.action || '',
+  };
+}
+
+const mmss = (delta) => {
+  if (!Number.isFinite(delta)) return '';
+  const total = Math.max(0, Math.round(delta / 1000));
+  const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60);
+  return h > 0 ? `${h}h${String(m).padStart(2,'0')}m` : `${m}m`;
+};
+
+function currentSprite() {
+  const map = state?.pet?.sprites || {};
+  if (state?.running || busy) return map.read ? 'read' : 'idle';
+  if (open && current() && current().mode !== 'offline') return map.talk ? 'talk' : 'idle';
+  return 'idle';
+}
+
+/** 精灵图 data URL 表（原生层拉好注入；WebKit 的 ATS 会拦 file:// 页面直挂的 http 图）。 */
+let petSprites = null;
+
+const latest = () => shape(state?.current);
+const history = () => (state?.bubbles || []).map(shape).filter(Boolean);
+function current() {
+  const pin = pinned && history().find((b) => b.id === pinned);
+  return pin || latest() || history()[0] || null;
+}
+
+// --- 渲染：宠物本体（一次性搭好，之后只改动态位） ----------------------------
+const FALLBACK_SVG = `<svg class="mp-fallback" viewBox="0 0 104 112" role="img" aria-label="鲸鱼娘占位图">
+  <ellipse cx="52" cy="62" rx="34" ry="30" fill="#2f6fd0"/><ellipse cx="43" cy="82" rx="22" ry="14" fill="#dbeafe"/>
+  <circle cx="41" cy="55" r="5" fill="#0b1220"/><circle cx="63" cy="55" r="5" fill="#0b1220"/>
+  <circle cx="43" cy="53" r="1.6" fill="#fff"/><circle cx="65" cy="53" r="1.6" fill="#fff"/>
+  <path d="M46 68 q6 5 12 0" stroke="#0b1220" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M52 24 C 74 14, 92 26, 90 44 C 82 34, 68 34, 52 40 Z" fill="#2f6fd0"/>
+  <path d="M78 6 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#ef4444"/></svg>`;
+
+PET_TAG.innerHTML = `
+  <span id="pet-visual"></span>
+  <span class="mp-badge" id="badge" aria-hidden="true" hidden></span>
+  <span class="mp-tag"><i class="mp-dot" id="dot"></i><span id="tag-label">待命中</span></span>`;
+const petVisual = document.getElementById('pet-visual');
+const badge = document.getElementById('badge');
+const dot = document.getElementById('dot');
+const tagLabel = document.getElementById('tag-label');
+
+function renderPetVisual() {
+  const name = currentSprite();
+  const src = petSprites?.[name] || null;
+  const key = src ? name : 'fallback';
+  if (key === spriteKey && petVisual.firstChild) {
+    // 只同步说话动画开关
+    const img = petVisual.querySelector('.mp-img');
+    const cur = current();
+    if (img) img.dataset.talking = open && cur && cur.mode !== 'offline' ? 'on' : 'off';
+    return;
+  }
+  spriteKey = key;
+  if (!src) { petVisual.innerHTML = FALLBACK_SVG; reportRects(); return; }
+  petVisual.innerHTML = `<img class="mp-img" alt="鲸鱼娘·小毛" draggable="false">`;
+  const img = petVisual.querySelector('.mp-img');
+  img.addEventListener('load', reportRects);
+  img.src = src;
+}
+
+// --- 渲染：红皮书卡片（key 变了才重建） --------------------------------------
+const anchor = document.getElementById('anchor');
+let cardEl = null, menuEl = null;
+
+function esc(text) {
+  return String(text ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function renderCard() {
+  const cur = current();
+  const hist = history();
+  const idx = cur ? hist.findIndex((b) => b.id === cur.id) : -1;
+  const older = idx >= 0 && idx < hist.length - 1;
+  const newer = idx > 0;
+  const running = !!(state?.running || busy);
+  const key = `${open}|${cur?.id}|${running}|${offline}|${state?.lastError?.message || ''}`;
+  if (key === cardKey && cardEl) return;
+  cardKey = key;
+  if (cardEl) { cardEl.remove(); cardEl = null; }
+  if (!open) { reportRects(); return; }
+
+  const bodyInner = running
+    ? `<div class="mp-loading"><i class="mp-spin"></i>小毛正在翻毛选…</div>`
+    : cur ? `
+      <blockquote class="mp-cite" data-kind="${esc(cur.cite?.kind || 'quote')}"><i class="mp-rule"></i>
+        <div class="mp-cite-main"><p>${cur.cite?.kind === 'summary' ? esc(cur.cite.text) : `「${esc(cur.cite.text)}」`}</p></div>
+      </blockquote>
+      <p class="mp-meta"><b>${esc(cur.cite?.label || '原文')}</b>${cur.year ? ` · ${esc(cur.year)}` : ''}</p>
+      ${cur.pua ? `<div class="mp-pua"><span aria-hidden="true">“</span><span>${esc(cur.pua)}</span></div>` : ''}
+      <p class="mp-lesson">${cur.axis ? `<span class="mp-axis" style="background:${AXIS_COLOR[cur.axis] || '#64748b'}" title="启示落点：${esc(cur.axis)}">${esc(cur.axis)}</span>` : ''}<b>启示 </b>${esc(cur.lesson)}</p>
+      <div class="mp-foot">
+        <span class="mp-src">${cur.sourceUrl ? `<a href="${esc(cur.sourceUrl)}" target="_blank" rel="noreferrer noopener">中文马克思主义文库</a>` : '内置语料'}${cur.mode === 'offline' ? ' <span class="mp-offline">· 离线摘录</span>' : ''}</span>
+        <button class="mp-btn" data-act="dismiss" aria-label="收起这条督促">收起</button>
+        <button class="mp-btn" data-act="generate" data-primary="on" aria-label="再督促我一次">再督促</button>
+      </div>`
+    : `<p class="mp-empty">${running ? '小毛正在翻第一篇毛选…' : '小毛还没读过毛选。'}</p>
+       <button class="mp-btn" data-act="generate" data-primary="on" aria-label="让小毛现在读一篇">现在读一篇</button>`;
+
+  const warn = state?.lastError
+    ? `<p class="mp-warn">上次生成没成功：${esc(String(state.lastError.message || '')).slice(0, 90)}</p>` : '';
+  const offlineWarn = offline ? `<p class="mp-warn">连接中断，重试中…</p>` : '';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'mp-bubble';
+  bubble.innerHTML = `
+    <i class="mp-tail" aria-hidden="true"></i>
+    <section class="mp-card" aria-label="小毛的毛选督促">
+      <div class="mp-head" id="card-head">
+        <span class="mp-state">${cur ? `《${esc(cur.title)}》` : '鲸鱼娘·小毛'}</span>
+        ${hist.length > 1 ? `<button class="mp-nav" data-act="nav-newer" ${newer ? '' : 'disabled'} title="更新的一条" aria-label="更新的一条">‹</button>` : ''}
+        ${hist.length > 1 ? `<button class="mp-nav" data-act="nav-older" ${older ? '' : 'disabled'} title="更早的一条" aria-label="更早的一条">›</button>` : ''}
+        <button class="mp-close" data-act="close" aria-label="收起气泡">×</button>
+      </div>
+      <div class="mp-body">${bodyInner}${warn}${offlineWarn}</div>
+    </section>`;
+  anchor.appendChild(bubble);
+  cardEl = bubble;
+
+  bubble.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-act]');
+    if (!btn) return;
+    const act = btn.dataset.act;
+    if (act === 'close') { open = false; pinned = null; renderCard(); }
+    else if (act === 'nav-newer' && newer) { pinned = hist[idx - 1].id; cardKey = ''; renderCard(); }
+    else if (act === 'nav-older' && older) { pinned = hist[idx + 1].id; cardKey = ''; renderCard(); }
+    else if (act === 'dismiss') { if (cur) closedIds.add(cur.id); open = false; pinned = null; send({ type:'action', action:'dismiss', id: cur?.id || '' }); renderCard(); }
+    else if (act === 'generate' && !running) { busy = true; send({ type:'action', action:'generate' }); cardKey = ''; renderCard(); }
+  });
+
+  reportRects();
+}
+
+// --- 渲染：徽标 / 标签 / 右键菜单 -------------------------------------------
+function renderMeta() {
+  const unread = Number(state?.unread || 0);
+  badge.hidden = !(unread > 0);
+  if (unread > 0) badge.textContent = unread > 9 ? '9+' : String(unread);
+  dot.dataset.off = offline ? 'off' : 'on';
+  const countdown = state?.nextRunAt ? Date.parse(state.nextRunAt) - Date.now() : NaN;
+  tagLabel.textContent = (state?.running || busy) ? '翻书中'
+    : Number.isFinite(countdown) && countdown > 0 ? `${mmss(countdown)} 后再读` : '待命中';
+  const cur = current();
+  const visual = petVisual.querySelector('.mp-img');
+  if (visual) visual.dataset.talking = open && cur && cur.mode !== 'offline' ? 'on' : 'off';
+}
+
+function renderMenu() {
+  if (menuEl) { menuEl.remove(); menuEl = null; }
+  if (!ctxOpen) { reportRects(); return; }
+  menuEl = document.createElement('div');
+  menuEl.className = 'mp-menu';
+  menuEl.innerHTML = `<button data-mact="reset">复位位置</button><button data-mact="quit">退出小毛</button>`;
+  anchor.appendChild(menuEl);
+  menuEl.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-mact]');
+    if (!btn) return;
+    ctxOpen = false; menuEl.remove(); menuEl = null;
+    send({ type:'config', action: btn.dataset.mact });
+    reportRects();
+  });
+  reportRects();
+}
+
+function renderAll() { renderPetVisual(); renderCard(); renderMeta(); if (!open) reportRects(); }
+
+// --- 输入区上报（原生层据此做点击穿透，等价 dsh-tauri 的 input region） -------
+function reportRects() {
+  const rects = [];
+  const push = (el) => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return;
+    rects.push({ x: r.left - 6, y: r.top - 6, w: r.width + 12, h: r.height + 12 });
+  };
+  push(anchor);
+  push(cardEl);
+  push(menuEl);
+  send({ type:'input', rects });
+}
+
+new ResizeObserver(reportRects).observe(anchor);
+
+// --- 打开卡片 = 这条已读（与 web 宠物同语义） --------------------------------
+function markRead(cur) {
+  if (!open || !cur || cur.read) return;
+  if (marked.has(cur.id)) return;
+  marked.add(cur.id);
+  window.setTimeout(() => {
+    send({ type:'action', action:'dismiss', id: cur.id });
+    if (state) {
+      state.unread = Math.max(0, (state.unread || 0) - (state.current?.id === cur.id ? 1 : 0));
+      state.bubbles = (state.bubbles || []).map((b) => (b.id === cur.id ? { ...b, read: true } : b));
+      renderMeta();
+    }
+  }, 600);
+}
+
+// --- 交互：点击开合 / 拖动 / 键盘 --------------------------------------------
+let drag = null;
+
+anchor.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0) return;
+  if (event.target.closest('.mp-menu') || event.target.closest('.mp-btn') || event.target.closest('.mp-nav') || event.target.closest('.mp-close')) return;
+  drag = { sx: event.screenX, sy: event.screenY, moved: false };
+  event.preventDefault();
+});
+
+window.addEventListener('pointermove', (event) => {
+  if (!drag) return;
+  const dx = event.screenX - drag.sx, dy = event.screenY - drag.sy;
+  if (!drag.moved && Math.abs(dx) + Math.abs(dy) > 4) {
+    drag.moved = true;
+    send({ type:'dragstart' }); // 原生层记住当前窗口位置，之后按差值绝对定位
+  }
+  if (drag.moved) send({ type:'dragto', dx, dy });
+}, { passive: true });
+
+window.addEventListener('pointerup', (event) => {
+  if (!drag) return;
+  const moved = drag.moved;
+  drag = null;
+  if (moved) { send({ type:'dragend' }); return; }
+  // 原地松手 = 点击：点宠物开合，点卡片头部不动
+  const onPet = !event.target.closest('.mp-card');
+  if (onPet) {
+    if (open) { open = false; pinned = null; }
+    else { pinned = latest()?.id || null; open = true; markRead(current()); }
+    cardKey = '';
+    renderCard(); renderMeta();
+  }
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && open) { open = false; pinned = null; ctxOpen = false; cardKey = ''; renderCard(); renderMenu(); }
+  if ((event.key === 'Enter' || event.key === ' ') && event.target === PET_TAG) {
+    event.preventDefault();
+    open = !open; if (open) markRead(current()); cardKey = ''; renderCard();
+  }
+});
+
+anchor.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+  ctxOpen = !ctxOpen;
+  renderMenu();
+});
+
+document.addEventListener('click', (event) => {
+  if (ctxOpen && !event.target.closest('.mp-menu')) { ctxOpen = false; renderMenu(); }
+});
+
+// --- 原生层入口 --------------------------------------------------------------
+window.__petReady = () => { reportRects(); };
+window.__petSprites = (map) => {
+  petSprites = map || {};
+  spriteKey = '';
+  renderPetVisual();
+  reportRects();
+};
+window.__petState = (json) => {
+  offline = false;
+  state = json;
+  busy = false;  const fresh = latest();
+  if (fresh) {
+    const at = Date.parse(fresh.at || '') || Date.now();
+    if (autoFloor === null) autoFloor = at;
+    if (seen !== fresh.id) {
+      seen = fresh.id;
+      if (at > autoFloor && !closedIds.has(fresh.id)) {
+        autoFloor = at;
+        pinned = fresh.id;
+        open = true;
+      }
+    }
+  }
+  spriteKey = '';        // sprite 选择可能随 running/open 变化
+  cardKey = '';
+  renderAll();
+};
+window.__petOffline = () => { offline = true; busy = false; renderMeta(); renderCard(); };
+window.__petActionDone = () => { busy = false; cardKey = ''; renderCard(); renderMeta(); };
+
+// 时钟：倒计时文案每秒刷新
+window.setInterval(renderMeta, 1000);
+
+// 起手画一只（还没有数据时是占位鲸鱼 + 待命中）
+renderAll();
+send({ type:'ready' });
+</script>
+</body>
+</html>

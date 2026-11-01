@@ -65,7 +65,9 @@
     "test": "node verify/smoke.mjs && node verify/contract.mjs && node verify/host.test.mjs",
     "test:contract": "node verify/contract.mjs",
     "audit:corpus": "node tools/audit-corpus-coverage.mjs",
-    "prepublishOnly": "node verify/smoke.mjs && node verify/contract.mjs"
+    "prepublishOnly": "node verify/smoke.mjs && node verify/contract.mjs",
+    "pet:build": "bash desktop/build.sh",
+    "pet": "bash desktop/build.sh && ./desktop/build/maoxuan-pet"
   },
   "dsh": {
     "bundle": {
