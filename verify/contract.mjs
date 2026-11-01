@@ -646,13 +646,14 @@ test('stripFrontmatter: 去掉 YAML frontmatter 与 BOM，正文不含前导空�
   assert.equal(stripFrontmatter(''), '');
 });
 
-test('ROUTES: 与契约 §3 的五条路由完全一致', () => {
+test('ROUTES: 与契约 §3 的六条路由完全一致', () => {
   assert.deepEqual(ROUTES, {
     state: '/api/dsh-maoxuan-pet.state',
     generate: '/api/dsh-maoxuan-pet.generate',
     dismiss: '/api/dsh-maoxuan-pet.dismiss',
     asset: '/api/dsh-maoxuan-pet.asset',
     corpus: '/api/dsh-maoxuan-pet.corpus',
+    shell: '/api/dsh-maoxuan-pet.shell',
   });
 });
 

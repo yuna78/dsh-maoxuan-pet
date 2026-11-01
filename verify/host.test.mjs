@@ -22,6 +22,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm, copyFile, readdir, unlink, realpath } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { Readable } from 'node:stream';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -52,6 +53,15 @@ const ROUTES = {
   dismiss: '/api/dsh-maoxuan-pet.dismiss',
   asset: '/api/dsh-maoxuan-pet.asset',
   corpus: '/api/dsh-maoxuan-pet.corpus',
+  shell: '/api/dsh-maoxuan-pet.shell',
+};
+
+/** 桌宠壳的 cookie-less 公开路由（与 index.js 的 SHELL_ROUTES 同步）。 */
+const SHELL_ROUTES = {
+  state: '/dsh-maoxuan-pet/pet.json',
+  asset: '/dsh-maoxuan-pet/asset.png',
+  generate: '/dsh-maoxuan-pet/generate',
+  dismiss: '/dsh-maoxuan-pet/dismiss',
 };
 
 const ARTICLE_FIXTURES = [
@@ -119,6 +129,7 @@ const ARTICLE_BODIES = {
  */
 function createFakeCtx() {
   const routes = [];
+  const webRoutes = [];
   const skills = [];
   const disposers = [];
   const timeouts = [];
@@ -145,6 +156,12 @@ function createFakeCtx() {
       const scope = {
         effect: (fn, label) => ctx.effect(fn, label),
         connection: { fetch: { register: registerRoute } },
+        webServer: {
+          register(route) {
+            webRoutes.push(route);
+            return () => {};
+          },
+        },
         skills: {
           register(definition) {
             skills.push(definition);
@@ -165,6 +182,7 @@ function createFakeCtx() {
   return {
     ctx,
     routes,
+    webRoutes,
     skills,
     timeouts,
     logs,
@@ -270,7 +288,7 @@ test('host E2E（假 ctx，无网络 / 无子进程 / 无模型调用）', async
     });
 
     await t.test('注册 5 条路由，path/methods 与契约 §3 一致', () => {
-      assert.equal(fake.routes.length, 5, `应注册 5 条路由，实际 ${fake.routes.length}`);
+      assert.equal(fake.routes.length, 6, `应注册 6 条路由（含桌宠壳开关），实际 ${fake.routes.length}`);
       const byPath = new Map(fake.routes.map((route) => [route.path, route]));
       assert.deepEqual([...byPath.keys()].sort(), Object.values(ROUTES).sort());
       assert.deepEqual(byPath.get(ROUTES.state).methods, ['GET']);
@@ -278,6 +296,7 @@ test('host E2E（假 ctx，无网络 / 无子进程 / 无模型调用）', async
       assert.deepEqual(byPath.get(ROUTES.asset).methods, ['GET']);
       assert.deepEqual(byPath.get(ROUTES.generate).methods, ['POST']);
       assert.deepEqual(byPath.get(ROUTES.dismiss).methods, ['POST']);
+      assert.deepEqual(byPath.get(ROUTES.shell).methods, ['GET', 'POST']);
       for (const route of fake.routes) {
         assert.equal(typeof route.fetch, 'function', `${route.path} 缺少 fetch 处理器`);
         // 契约 §6.1：真实 dsh web 里缺 requestBody:'buffered' 会让 GET 构造流式
@@ -291,6 +310,81 @@ test('host E2E（假 ctx，无网络 / 无子进程 / 无模型调用）', async
       assert.ok(found, `未注册路由 ${path}`);
       return found;
     };
+
+    await t.test('桌宠壳公开路由：默认注册 4 条、不需要任何 cookie/token', async () => {
+      assert.equal(fake.webRoutes.length, 4, `应注册 4 条公开路由，实际 ${fake.webRoutes.length}`);
+      const byPath = new Map(fake.webRoutes.map((entry) => [entry.path, entry]));
+      assert.deepEqual([...byPath.keys()].sort(), Object.values(SHELL_ROUTES).sort());
+      for (const entry of fake.webRoutes) {
+        assert.equal(entry.kind, 'exact', `${entry.path} 必须是 exact 路由`);
+        assert.equal(typeof entry.handler, 'function', `${entry.path} 缺 handler`);
+      }
+
+      // 走一遍 node 风格的 req/res：无 cookie、无 Authorization，必须直接 200
+      const nodeFetch = (path, { method = 'GET', headers = {}, body = '' } = {}) => new Promise((resolve, reject) => {
+        const res = {
+          status: 0,
+          body: Buffer.alloc(0),
+          headers: {},
+          writeHead(status, hdrs) { this.status = status; Object.assign(this.headers, hdrs || {}); },
+          end(chunk) { this.body = Buffer.concat([this.body, Buffer.from(chunk ?? '')]); resolve(this); },
+        };
+        const req = Readable.from(body ? [Buffer.from(body)] : []);
+        req.method = method;
+        req.url = path;
+        req.headers = headers;
+        const entry = byPath.get(path.split('?')[0]);
+        assert.ok(entry, `未注册公开路由 ${path}`);
+        entry.handler(req, res).catch(reject);
+      });
+
+      const stateRes = await nodeFetch(SHELL_ROUTES.state);
+      assert.equal(stateRes.status, 200, '公开 state 不鉴权，应直接 200');
+      const snapshot = JSON.parse(stateRes.body.toString('utf8'));
+      assert.equal(snapshot.version, 1);
+
+      const assetRes = await nodeFetch(SHELL_ROUTES.asset + '?name=idle');
+      assert.equal(assetRes.status, 200);
+      assert.match(String(assetRes.headers['content-type'] ?? ''), /image\/png/);
+
+      // POST 的跨站防护：缺自定义头 → 403；带齐 → 200
+      const forged = await nodeFetch(SHELL_ROUTES.dismiss, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{}',
+      });
+      assert.equal(forged.status, 403, '缺 x-dsh-maoxuan-pet 头的 POST 必须 403');
+      const allowed = await nodeFetch(SHELL_ROUTES.dismiss, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-dsh-maoxuan-pet': '1' },
+        body: '{}',
+      });
+      assert.equal(allowed.status, 200, '带自定义头的 POST 应放行');
+    });
+
+    await t.test('publicRoutes: false 时一条公开路由都不注册（可关闭）', async () => {
+      const off = createFakeCtx();
+      await host.apply(off.ctx, {
+        enabled: false, headless: false, publicRoutes: false,
+      });
+      assert.equal(off.webRoutes.length, 0);
+    });
+
+    await t.test('shell 路由：GET 是状态快照，POST 非法 action 是 400', async () => {
+      const status = await route(ROUTES.shell).fetch(makeRequest(ROUTES.shell));
+      assert.equal(status.status, 200);
+      const body = await readJson(status);
+      assert.equal(typeof body.supported, 'boolean');
+      assert.equal(typeof body.running, 'boolean');
+      assert.equal(body.building, false);
+
+      const bad = await route(ROUTES.shell).fetch(
+        makeRequest(ROUTES.shell, { method: 'POST', body: { action: 'nonsense' } }));
+      assert.equal(bad.status, 400);
+      const badBody = await readJson(bad);
+      assert.match(String(badBody.error), /launch|quit/);
+    });
+
 
     await t.test('state 路由：快照字段齐全（首次调用会等待语料就绪）', async () => {
       const response = await route(ROUTES.state).fetch(makeRequest(ROUTES.state));
@@ -583,7 +677,7 @@ test('host E2E（假 ctx，无网络 / 无子进程 / 无模型调用）', async
         assert.ok(next > Date.now() - 5000, 'nextRunAt 不应在过去');
         assert.equal(fakeB.timeouts.length, 1, '只允许一个待触发的定时器（不重复 arm）');
         assert.ok(fakeB.timeouts[0].ms <= 1000 + 50, `首次延迟应约为 firstDelaySeconds，实际 ${fakeB.timeouts[0].ms}ms`);
-        assert.equal(fakeB.routes.length, 5);
+        assert.equal(fakeB.routes.length, 6);
       });
     } finally {
       fakeB.disposeAll();

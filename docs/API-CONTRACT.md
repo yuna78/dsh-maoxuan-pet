@@ -143,6 +143,20 @@
 
 `{ "articles": [ { "id", "title", "year", "tags", "quote", "summary" } ] }`（不含全文，供 Client 展示“这小时读了哪篇”）。
 
+### `GET|POST /api/dsh-maoxuan-pet.shell`
+
+独立桌宠壳（macOS）的界面开关。
+
+- `GET`：状态快照 `{ "supported": true, "running": false, "pid": null, "building": false, "error": null }`。
+  `running` 读壳自己写的 pidfile（`$DSH_HOME/storages/dsh-maoxuan-pet.shell.pid`，读取方用
+  `kill(pid,0)` 探活），因此手动用 `启动小毛.command` 起的壳同样被认出。
+- `POST`：请求体 `{ "action": "launch" | "quit", "origin"?: "http://127.0.0.1:<port>" }`。
+  `launch` 时若产物缺失会先跑一次 `desktop/build.sh`（swiftc，最长 120s），随后以
+  `detached` 方式拉起 `desktop/build/maoxuan-pet --public [--origin=…]`——壳独立于宿主进程，
+  宿主重启不影响她。`origin` 必须匹配 `http://127.0.0.1:<port>` 才会透传（防注入）。
+  响应统一 `{ "ok": boolean, "supported", "running", "pid", "building", "error"? }`；
+  `action` 非法时 400。壳已活着时 `launch` 幂等返回 `{ ok: true, running: true }`。
+
 ## 4. 语料契约（`corpus/`）
 
 `corpus/index.json`：

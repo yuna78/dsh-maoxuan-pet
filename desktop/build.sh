@@ -14,4 +14,4 @@ swiftc -O \
 cp desktop/pet.html desktop/build/pet.html
 
 echo "built: desktop/build/maoxuan-pet"
-echo "run:   ./desktop/build/maoxuan-pet [--origin=http://127.0.0.1:3081] [--reset] [--verbose]"
+echo "run:   ./desktop/build/maoxuan-pet [--origin=http://127.0.0.1:3081] [--token=…] [--reset] [--verbose]"

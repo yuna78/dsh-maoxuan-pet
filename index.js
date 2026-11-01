@@ -16,8 +16,8 @@
  * node_modules without resolving any DSH-internal module.
  */
 import { readFile, writeFile, rename, mkdir, stat } from 'node:fs/promises';
-import { readFileSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { spawn, execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
@@ -37,11 +37,30 @@ export const ROUTES = {
   dismiss: '/api/dsh-maoxuan-pet.dismiss',
   asset: '/api/dsh-maoxuan-pet.asset',
   corpus: '/api/dsh-maoxuan-pet.corpus',
+  shell: '/api/dsh-maoxuan-pet.shell',
+};
+
+/**
+ * Public (loopback, cookie-less) routes for the standalone macOS shell.
+ *
+ * `/api` is auth-gated from DSH 0.2.1-rc.2 on: a bare URLSession gets 401, and
+ * the launch token is only obtainable from a CLI-launched host (the desktop app
+ * never prints it). The native shell therefore needs its own door. These routes
+ * are registered straight on the web server (like static assets) and are
+ * deliberately narrow: GETs are read-only public data; POSTs additionally demand
+ * a JSON content-type plus `x-dsh-maoxuan-pet: 1` — a cross-site page cannot
+ * send that without a CORS preflight, so it is not a CSRF hole. The listener
+ * itself only binds loopback, so this is not reachable from the network.
+ */
+export const SHELL_ROUTES = {
+  state: '/dsh-maoxuan-pet/pet.json',
+  asset: '/dsh-maoxuan-pet/asset.png',
+  generate: '/dsh-maoxuan-pet/generate',
+  dismiss: '/dsh-maoxuan-pet/dismiss',
 };
 
 /** Sprite name -> file under assets/. */
-const SPRITES = {
-  idle: 'pet-idle.png',
+const SPRITES = {  idle: 'pet-idle.png',
   talk: 'pet-talk.png',
   blink: 'pet-blink.png',
   read: 'pet-read.png',
@@ -89,6 +108,10 @@ export function normaliseConfig(config) {
     timeoutMs: int(raw.timeoutMs, 180000, 10000, 900000),
     businessContext: typeof raw.businessContext === 'string' ? raw.businessContext.trim() : '',
     modelHint: typeof raw.modelHint === 'string' ? raw.modelHint.trim() : '',
+    // Loopback-public routes for the standalone desktop shell (see SHELL_ROUTES).
+    // On by default — without them the shell cannot show content next to the
+    // desktop app, which is auth-gated and never reveals its launch token.
+    publicRoutes: raw.publicRoutes !== false,
   };
 }
 
@@ -1135,82 +1158,166 @@ export function apply(ctx, config) {
     void ready.then(install).catch((error) => log('warn', `skill 注册失败：${error?.message ?? error}`));
   });
 
+  // --- desktop shell (macOS) supervisor -------------------------------------
+  // 独立桌宠壳是个单独的 Swift 进程；界面里的开关只负责 spawn / SIGTERM。
+  // 运行状态读壳自己写的 pidfile，所以用 启动小毛.command 手动起的壳也认得出，
+  // 不会出现「按钮说她没出来、其实她就在屏幕上」。
+  const shellBin = join(here, 'desktop', 'build', 'maoxuan-pet');
+  const shellScript = join(here, 'desktop', 'build.sh');
+  const shellPidPath = join(resolveDshHome(), 'storages', 'dsh-maoxuan-pet.shell.pid');
+  let shellChild = null;
+  let shellBusy = false;
+  let shellError = null;
+  const shellPlatform = process.platform === 'darwin';
+
+  const shellPid = () => {
+    try {
+      const pid = Number(readFileSync(shellPidPath, 'utf8').trim());
+      if (!Number.isInteger(pid) || pid <= 1) return null;
+      process.kill(pid, 0);
+      // pid 会被系统复用：编号活着 ≠ 还是小毛。校验进程名，防止徽章状态失真。
+      if (shellPlatform) {
+        const comm = execFileSync('ps', ['-p', String(pid), '-o', 'comm='], { encoding: 'utf8' });
+        if (!comm.trim().endsWith('maoxuan-pet')) return null;
+      }
+      return pid;
+    } catch { return null; }
+  };
+
+  const shellStatus = () => {
+    const pid = shellPid();
+    return {
+      supported: shellPlatform,
+      running: Boolean(pid),
+      pid: pid ?? null,
+      building: shellBusy,
+      error: shellError,
+    };
+  };
+
+  /** 首次启动：产物不存在就先编（swiftc 几秒钟），编完再起。 */
+  const buildShell = () => new Promise((resolve, reject) => {
+    const child = spawn('bash', [shellScript], { cwd: here, stdio: 'ignore' });
+    const timer = setTimeout(() => {
+      try { child.kill('SIGKILL'); } catch { /* already gone */ }
+      reject(new Error('编译超时（120s）'));
+    }, 120000);
+    child.on('error', (error) => { clearTimeout(timer); reject(error); });
+    child.on('exit', (code) => {
+      clearTimeout(timer);
+      if (code === 0 && existsSync(shellBin)) resolve();
+      else reject(new Error(`编译失败（exit ${code}）——终端里跑一次 npm run pet:build 看报错`));
+    });
+  });
+
+  const launchShell = async (origin) => {
+    if (!shellPlatform) return { ok: false, supported: false, error: '独立桌宠壳目前只支持 macOS' };
+    const pid = shellPid();
+    if (pid) return { ok: true, ...shellStatus() };
+    if (shellBusy) return { ok: false, ...shellStatus(), error: '正在编译桌宠壳，等几秒' };
+    shellError = null;
+    try {
+      if (!existsSync(shellBin)) {
+        shellBusy = true;
+        await buildShell();
+      }
+      const args = ['--public'];
+      // 只接受 loopback origin：这个值来自浏览器 location.origin，别让它带去别处
+      if (typeof origin === 'string' && /^http:\/\/(127\.0\.0\.1|localhost|\[::1\]):\d{2,5}$/.test(origin)) {
+        origin = origin.replace('localhost', '127.0.0.1').replace('[::1]', '127.0.0.1');
+        args.push(`--origin=${origin}`);
+      }
+      const child = spawn(shellBin, args, { detached: true, stdio: 'ignore' });
+      child.unref();
+      shellChild = child;
+      return { ok: true, ...shellStatus() };
+    } catch (error) {
+      shellError = String(error?.message || error);
+      return { ok: false, ...shellStatus(), error: shellError };
+    } finally {
+      shellBusy = false;
+    }
+  };
+
+  const quitShell = () => {
+    const pid = shellPid();
+    if (pid) {
+      try { process.kill(pid, 'SIGTERM'); } catch { /* already gone */ }
+    }
+    if (shellChild) {
+      try { shellChild.kill(); } catch { /* already gone */ }
+      shellChild = null;
+    }
+    shellError = null;
+    return { ok: true, ...shellStatus() };
+  };
+
   // --- transport -----------------------------------------------------------
+  // The same five handlers serve both doors: the authenticated `/api` routes the
+  // Web client uses, and the loopback-public routes the native shell uses.
+  const handlers = {
+    state: async () => { await ready; return json(snapshot()); },
+    corpus: async () => {
+      await ready;
+      return json({
+        articles: corpus.articles.map((a) => ({
+          id: a.id, title: a.title, year: a.year, tags: a.tags, quote: a.quote, summary: a.summary,
+        })),
+      });
+    },
+    generate: async () => {
+      await ready;
+      if (running) return json({ ok: true, running: true, bubble: null }, 202);
+      const result = await runOnce('manual');
+      if (!result.ok) return json(result, 500);
+      return json(result, 200);
+    },
+    dismiss: async (request) => {
+      await ready;
+      const body = await readBody(request);
+      const target = typeof body.id === 'string' && body.id
+        ? state.bubbles.find((b) => b.id === body.id)
+        : state.bubbles.find((b) => !b.read);
+      if (target && !target.read) {
+        target.read = true;
+        await persist();
+      }
+      return json({ ok: true, unread: state.bubbles.filter((b) => !b.read).length });
+    },
+    shell: async (request) => {
+      if (request.method !== 'POST') return json(shellStatus());
+      const body = await readBody(request);
+      const action = String(body.action || '');
+      if (action === 'launch') return json(await launchShell(body.origin));
+      if (action === 'quit') return json(quitShell());
+      return json({ ok: false, error: 'action 必须是 launch 或 quit' }, 400);
+    },
+    asset: async (request) => {
+      let sprite = 'idle';
+      try { sprite = new URL(request.url).searchParams.get('name') || 'idle'; } catch { sprite = 'idle'; }
+      const file = SPRITES[sprite] || SPRITES.idle;
+      try {
+        const [bytes, info] = await Promise.all([readFile(join(assetsDir, file)), stat(join(assetsDir, file))]);
+        if (!info.size) throw new MaoxuanPetError('空文件');
+        return new Response(bytes, {
+          headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=3600' },
+        });
+      } catch {
+        return text(`缺少素材：assets/${file}`, 404);
+      }
+    },
+  };
+
   ctx.inject?.(['connection'], (scope) => {
     const routes = [
-      {
-        path: ROUTES.state,
-        methods: ['GET'],
-        // Required: without an explicit body mode the bridge builds a GET request
-        // with a stream body and Node throws, which the Host surfaces as 400.
-        requestBody: 'buffered',
-        fetch: async () => { await ready; return json(snapshot()); },
-      },
-      {
-        path: ROUTES.corpus,
-        methods: ['GET'],
-        // Required: without an explicit body mode the bridge builds a GET request
-        // with a stream body and Node throws, which the Host surfaces as 400.
-        requestBody: 'buffered',
-        fetch: async () => {
-          await ready;
-          return json({
-            articles: corpus.articles.map((a) => ({
-              id: a.id, title: a.title, year: a.year, tags: a.tags, quote: a.quote, summary: a.summary,
-            })),
-          });
-        },
-      },
-      {
-        path: ROUTES.generate,
-        methods: ['POST'],
-        requestBody: 'buffered',
-        fetch: async () => {
-          await ready;
-          if (running) return json({ ok: true, running: true, bubble: null }, 202);
-          const result = await runOnce('manual');
-          if (!result.ok) return json(result, 500);
-          return json(result, 200);
-        },
-      },
-      {
-        path: ROUTES.dismiss,
-        methods: ['POST'],
-        requestBody: 'buffered',
-        fetch: async (request) => {
-          await ready;
-          const body = await readBody(request);
-          const target = typeof body.id === 'string' && body.id
-            ? state.bubbles.find((b) => b.id === body.id)
-            : state.bubbles.find((b) => !b.read);
-          if (target && !target.read) {
-            target.read = true;
-            await persist();
-          }
-          return json({ ok: true, unread: state.bubbles.filter((b) => !b.read).length });
-        },
-      },
-      {
-        path: ROUTES.asset,
-        methods: ['GET'],
-        // Required: without an explicit body mode the bridge builds a GET request
-        // with a stream body and Node throws, which the Host surfaces as 400.
-        requestBody: 'buffered',
-        fetch: async (request) => {
-          let sprite = 'idle';
-          try { sprite = new URL(request.url).searchParams.get('name') || 'idle'; } catch { sprite = 'idle'; }
-          const file = SPRITES[sprite] || SPRITES.idle;
-          try {
-            const [bytes, info] = await Promise.all([readFile(join(assetsDir, file)), stat(join(assetsDir, file))]);
-            if (!info.size) throw new MaoxuanPetError('空文件');
-            return new Response(bytes, {
-              headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=3600' },
-            });
-          } catch {
-            return text(`缺少素材：assets/${file}`, 404);
-          }
-        },
-      },
+      // Required: without an explicit body mode the bridge builds a GET request
+      // with a stream body and Node throws, which the Host surfaces as 400.
+      { path: ROUTES.state, methods: ['GET'], requestBody: 'buffered', fetch: () => handlers.state() },
+      { path: ROUTES.corpus, methods: ['GET'], requestBody: 'buffered', fetch: () => handlers.corpus() },
+      { path: ROUTES.generate, methods: ['POST'], requestBody: 'buffered', fetch: () => handlers.generate() },
+      { path: ROUTES.dismiss, methods: ['POST'], requestBody: 'buffered', fetch: (request) => handlers.dismiss(request) },
+      { path: ROUTES.asset, methods: ['GET'], requestBody: 'buffered', fetch: (request) => handlers.asset(request) },
+      { path: ROUTES.shell, methods: ['GET', 'POST'], requestBody: 'buffered', fetch: (request) => handlers.shell(request) },
     ];
     const disposers = routes.map((route) => scope.connection.fetch.register(route));
     scope.effect(() => () => {
@@ -1219,6 +1326,68 @@ export function apply(ctx, config) {
       }
     }, 'maoxuan-pet.routes');
   });
+
+  // --- cookie-less transport for the standalone macOS shell -----------------
+  if (cfg.publicRoutes) {
+    ctx.inject?.(['webServer'], (webCtx) => {
+      // 只认真正的 webServer 服务：没有它（测试里的假 ctx、或非 web 宿主）就安静跳过，
+      // 可选增强绝不该把插件主体挂掉。
+      const server = webCtx?.webServer;
+      if (typeof server?.register !== 'function') {
+        log('debug', '公开路由不可用（宿主无 webServer），桌宠壳请改用 --token 走 /api');
+        return;
+      }
+      const register = (path, methods, handler) => {
+        const dispose = server.register({
+          kind: 'exact',
+          path,
+          handler: async (req, res) => {
+            if (!methods.includes(req.method)) {
+              res.writeHead(405, { 'content-type': 'text/plain; charset=utf-8' });
+              res.end('method not allowed');
+              return;
+            }
+            if (req.method === 'POST') {
+              const type = String(req.headers['content-type'] || '');
+              if (!type.includes('application/json') || req.headers['x-dsh-maoxuan-pet'] !== '1') {
+                res.writeHead(403, { 'content-type': 'text/plain; charset=utf-8' });
+                res.end('forbidden');
+                return;
+              }
+            }
+            try {
+              const chunks = [];
+              for await (const chunk of req) chunks.push(chunk);
+              const body = chunks.length ? Buffer.concat(chunks).toString('utf8') : '';
+              const request = new Request(`http://127.0.0.1${req.url || path}`, {
+                method: req.method,
+                headers: req.headers,
+                body: body || undefined,
+              });
+              const response = await handler(request);
+              res.writeHead(response.status, Object.fromEntries(response.headers));
+              res.end(Buffer.from(await response.arrayBuffer()));
+            } catch (error) {
+              res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+              res.end(String(error?.message || error));
+            }
+          },
+        });
+        return dispose;
+      };
+      const disposers = [
+        register(SHELL_ROUTES.state, ['GET'], () => handlers.state()),
+        register(SHELL_ROUTES.asset, ['GET'], (request) => handlers.asset(request)),
+        register(SHELL_ROUTES.generate, ['POST'], () => handlers.generate()),
+        register(SHELL_ROUTES.dismiss, ['POST'], (request) => handlers.dismiss(request)),
+      ];
+      webCtx.effect(() => () => {
+        for (const dispose of disposers) {
+          try { dispose?.(); } catch { /* already gone */ }
+        }
+      }, 'maoxuan-pet.shell-routes');
+    });
+  }
 
   // Start the clock only after the persisted snapshot is loaded.
   void ready.then(() => {

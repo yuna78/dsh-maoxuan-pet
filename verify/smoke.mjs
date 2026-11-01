@@ -219,8 +219,8 @@ const contract = readFileSync(at('docs/API-CONTRACT.md'), 'utf8');
 const docRoutes = [...new Set(contract.match(/\/api\/dsh-maoxuan-pet\.[a-z]+/g) ?? [])].sort();
 const hostSource = readFileSync(at('index.js'), 'utf8');
 
-check('docs/API-CONTRACT.md 声明 5 条路由', () => {
-  assert.equal(docRoutes.length, 5, `文档里应恰好出现 5 条路由，实际：${docRoutes.join(', ')}`);
+check('docs/API-CONTRACT.md 声明 6 条路由', () => {
+  assert.equal(docRoutes.length, 6, `文档里应恰好出现 6 条路由，实际：${docRoutes.join(', ')}`);
   return true;
 });
 

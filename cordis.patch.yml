@@ -63,6 +63,12 @@
             name: '@deepseek-ai/dsh-tool-skill'
           - id: tool-todo
             name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              # @deepseek-ai/dsh-tool-todo 把 allowParallelInProgress 声明为
+              # required（rc.2 起如此），缺省不会合并默认值；不写这里 preset
+              # 挂载就会以 “$.allowParallelInProgress missing required value”
+              # 失败，预设面板上表现为「加载失败 / Failed to load」。
+              allowParallelInProgress: false
           - id: tool-ask-user
             name: '@deepseek-ai/dsh-tool-ask-user'
           - id: tool-web

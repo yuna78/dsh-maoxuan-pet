@@ -17,12 +17,16 @@ dsh plugin --profile web add dsh-plugin-maoxuan-pet
 
 Web 宠物住在 DSH 界面里，界面最小化她就跟着没了——这是浏览器沙箱的硬边界。`desktop/` 目录自带一个**独立进程的桌宠壳**（纯 Swift + 系统 WebKit，约 450 行、零依赖）：透明、置顶、跨所有桌面空间，DSH 最小化甚至关掉界面她都站着；毛选的灵魂（每小时读一篇）仍由插件负责，壳只把「显示器」搬了出来。
 
-```bash
-npm run pet:build   # swiftc 编译，几秒
-npm run pet         # 她就站在屏幕右下角了
-```
+**最省事：不用碰终端。** 打开小毛的红皮书卡片，页脚有一个 **「放她到桌面」** 按钮——点她一下，小毛就以独立窗口站上桌面（首次会自动编译，几秒）；再点一次「收回桌宠」她就回界面里。不需要 token，不需要双击任何文件。
 
-点她开合红皮书卡片、拖她换位置（下次还在那儿）、右键她 = 复位位置 / 退出。详见 [desktop/README.md](desktop/README.md)。
+两条备用路：
+
+- 双击仓库根目录的 `启动小毛.command`（自动连当前 DSH、自动 `--public`，重复双击不会叠出第二只）；
+- 命令行：`./desktop/build/maoxuan-pet --public`。
+
+点她开合红皮书卡片、拖她换位置（下次还在那儿、能拖出 DSH 窗口）、右键她 = 复位位置 / 退出。详见 [desktop/README.md](desktop/README.md)。
+
+> Windows / Linux：界面里的宠物照常可用，但「拖出窗口」的独立壳目前只有 macOS 实现；页面 `pet.html` 与路由是跨平台的，照 `desktop/README.md` 用 Tauri/Electron 包一层即可。
 
 ## 界面
 

@@ -22,6 +22,7 @@ window.__ModuleLoader__.load({
       state: '/api/dsh-maoxuan-pet.state',
       generate: '/api/dsh-maoxuan-pet.generate',
       dismiss: '/api/dsh-maoxuan-pet.dismiss',
+      shell: '/api/dsh-maoxuan-pet.shell',
     };
     const POLL_MS = 20000;
     const POLL_BUSY_MS = 3000;
@@ -195,6 +196,8 @@ window.__ModuleLoader__.load({
       const [data, setData] = useState(null);
       const [error, setError] = useState(null);
       const [busy, setBusy] = useState(false);
+      const [shell, setShell] = useState(null);
+      const [shellBusy, setShellBusy] = useState(false);
       const [open, setOpen] = useState(false);
       const [pos, setPos] = useState(readPos);
       const [spriteBroken, setSpriteBroken] = useState(false);
@@ -228,8 +231,12 @@ window.__ModuleLoader__.load({
 
       const refresh = useCallback(async () => {
         try {
-          const next = await fetchState();
+          const [next, shellState] = await Promise.all([
+            fetchState(),
+            fetch(`${API.shell}?t=${Date.now()}`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+          ]);
           setData(next);
+          setShell(shellState);
           setError(null);
           return next;
         } catch (failure) {
@@ -342,6 +349,32 @@ window.__ModuleLoader__.load({
         }
       }, [refresh]);
 
+      // 独立桌宠壳：macOS 上把小毛请出 DSH 窗口（再点一次收回）。
+      const toggleShell = useCallback(async () => {
+        if (shellBusy) return;
+        setShellBusy(true);
+        try {
+          const response = await fetch(API.shell, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              action: shell?.running ? 'quit' : 'launch',
+              origin: window.location.origin,
+            }),
+          });
+          const result = await response.json().catch(() => null);
+          // 400/500 的 error 也值得说人话：编译失败、平台不支持都会带中文指引
+          if (result && result.error) {
+            setShell((prev) => ({ ...(prev || {}), error: result.error }));
+          }
+          await refresh();
+        } catch (failure) {
+          setShell((prev) => ({ ...(prev || {}), error: String(failure?.message || failure) }));
+        } finally {
+          setShellBusy(false);
+        }
+      }, [shell, shellBusy, refresh]);
+
       const startDrag = useCallback((event) => {
         if (event.button !== 0) return;
         suppress.current = false;
@@ -427,6 +460,17 @@ window.__ModuleLoader__.load({
                     : '内置语料',
                   // 离线摘录不再用 chip 抢眼位，改成页脚一行小字，诚实但不喧宾夺主。
                   current.mode === 'offline' ? h('span', { className: 'mp-offline' }, ' · 离线摘录') : null),
+                shell?.supported
+                  ? h('button', {
+                      className: 'mp-btn', type: 'button',
+                      disabled: shellBusy || shell?.building,
+                      title: shell?.running
+                        ? '关掉独立桌宠窗口（她回到 DSH 界面里）'
+                        : '让她作为一个独立窗口站到桌面上——可以拖到 DSH 窗口外面，关掉 DSH 也还在',
+                      onClick: toggleShell,
+                      'aria-label': shell?.running ? '收回独立桌宠' : '放她到桌面',
+                    }, shellBusy || shell?.building ? '开关中…' : shell?.running ? '收回桌宠' : '放她到桌面')
+                  : null,
                 h('button', { className: 'mp-btn', type: 'button', onClick: dismiss, 'aria-label': '收起这条督促' }, '收起'),
                 h('button', {
                   className: 'mp-btn', type: 'button', 'data-primary': 'on',
@@ -438,6 +482,7 @@ window.__ModuleLoader__.load({
                 className: 'mp-btn', type: 'button', 'data-primary': 'on',
                 disabled: running, onClick: regenerate, 'aria-label': '让小毛现在读一篇',
               }, running ? '翻书中…' : '现在读一篇')),
+          shell?.error ? h('p', { className: 'mp-warn' }, `桌宠壳：${String(shell.error).slice(0, 90)}`) : null,
           data?.lastError ? h('p', { className: 'mp-warn' }, `上次生成没成功：${String(data.lastError.message || '').slice(0, 90)}`) : null,
           error ? h('p', { className: 'mp-warn' }, '连接中断，重试中…') : null)));
 
@@ -479,6 +524,31 @@ window.__ModuleLoader__.load({
       // The card hangs to the left of the pet. Only when the pet has been
       // dragged close to the left edge does it flip to the right side.
       const side = pos && pos.x < 380 ? 'right' : 'left';
+
+      // 桌面模式：独立壳已经站在真桌面上了，界面里的小毛就隐身，
+      // 只留一枚收回徽章——两只同时显示只会让人困惑「哪只才是她」。
+      if (shell?.running) {
+        return h('button', {
+          className: 'mp-dock-chip', type: 'button', onClick: toggleShell,
+          title: '收回桌面上的小毛',
+          style: {
+            position: 'fixed', right: 16, bottom: 16, zIndex: 2147483000,
+            display: 'flex', alignItems: 'center', gap: 5,
+            border: '1px solid rgba(255,217,168,.35)', borderRadius: 999, cursor: 'pointer',
+            padding: '3px 8px 3px 4px', font: '11px/1.4 -apple-system, sans-serif',
+            color: '#ffe9c8', background: 'rgba(109,20,24,.92)',
+            boxShadow: '0 2px 8px rgba(0,0,0,.24)',
+          },
+          'aria-label': '收回桌面上的小毛',
+        },
+          h('svg', { width: 14, height: 14, viewBox: '0 0 512 512', 'aria-hidden': true },
+            h('rect', { x: 0, y: 0, width: 512, height: 512, rx: 116, fill: '#FFF6E9' }),
+            h('rect', { x: 120, y: 104, width: 232, height: 304, rx: 26, fill: '#B3271E' }),
+            h('rect', { x: 120, y: 104, width: 46, height: 304, rx: 22, fill: '#8F1E17' }),
+            h('polygon', { fill: '#E8C36A', points: '263,150 273.32,181.76 306.72,181.76 279.7,201.74 289.02,234.5 263,214.25 236.98,234.5 246.3,201.74 219.28,181.76 252.68,181.76' }),
+            h('rect', { x: 215, y: 272, width: 96, height: 16, rx: 8, fill: '#E8C36A' })),
+          shellBusy ? '收回中…' : '收回');
+      }
 
       return h('div', { style, 'data-maoxuan-pet': true },
         h('style', { dangerouslySetInnerHTML: { __html: CSS } }),

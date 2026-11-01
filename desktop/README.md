@@ -47,11 +47,48 @@ npm run pet            # 编译并前台运行（Ctrl-C 或右键小毛→退出
 | --- | --- |
 | `--origin=URL` | 宿主地址，默认 `http://127.0.0.1:3081` |
 | `--port=N` | 等价 `--origin=http://127.0.0.1:N` |
+| `--public` | **推荐**：走插件注册的 cookie-less 公开路由（`/dsh-maoxuan-pet/…`），不需要 token |
+| `--token=TOKEN` | 备选：宿主 launch token，先换签名 cookie 再走 `/api` |
 | `--reset` | 忽略保存的位置，回到屏幕右下 |
 | `--verbose` | 向 stderr 打轮询/POST/输入区日志 |
 
 无 Dock 图标、不进 Cmd-Tab（`NSActivationPolicy.accessory`）。窗口位置存在
 `UserDefaults`（suite `dsh-maoxuan-pet.window`），拖到哪儿下次就在哪儿。
+
+## 鉴权（DSH 0.2.1-rc.2+ 宿主必读）
+
+从 DSH `0.2.1-rc.2` 起宿主 Web API 全部要鉴权：launch token 只在 `GET /` 换签名
+cookie（`dsh-auth-*`），`/api/*` 不带 cookie 一律 401，也不接受 Authorization 头。
+而 token 只有 CLI 宿主（`dsh web`）会打印，桌面 App 从不外泄——所以壳不能只依赖 `/api`。
+
+本插件因此自己开了一组 **loopback 公开路由**（`SHELL_ROUTES`，默认开启）：
+
+| 路由 | 方法 | 说明 |
+| --- | --- | --- |
+| `/dsh-maoxuan-pet/pet.json` | GET | 与 `/api/dsh-maoxuan-pet.state` 同一份快照 |
+| `/dsh-maoxuan-pet/asset.png?name=idle` | GET | 立绘（idle/talk/blink/read） |
+| `/dsh-maoxuan-pet/generate` | POST | 同「再督促」（要 `x-dsh-maoxuan-pet: 1` 头） |
+| `/dsh-maoxuan-pet/dismiss` | POST | 同「收起」（要 `x-dsh-maoxuan-pet: 1` 头） |
+
+安全性：监听只绑 loopback，公网到不了；GET 只有毛选快照与立绘；POST 强制 JSON
+content-type + 自定义头，跨站页面发不出这样的请求（需要 CORS 预检），因此不是 CSRF 洞。
+不需要时可用 `publicRoutes: false` 在插件配置里关掉。
+
+两条路怎么选：
+
+- **`--public`（默认推荐）**：不需要 token，桌面 App 旁边也能满血。
+- **`--token=<TOKEN>`**：CLI 宿主会打印 `dsh web: http://127.0.0.1:<port>/?token=<TOKEN>`，
+  复制给壳即可；壳用它换签名 cookie 后走 `/api`（cookie 失效会自动重换）。
+
+日常最省事：双击仓库根目录的 `启动小毛.command`——它自动找最近一次写入的
+`~/.dsh/agent-tree-dock-<port>.json` 得到宿主地址，然后用 `--public` 起壳。
+
+## 界面开关（不用双击）
+
+打开 Web 界面里小毛的红皮书卡片，页脚有 **「放她到桌面」/「收回桌宠」** 按钮：
+宿主插件通过 `POST /api/dsh-maoxuan-pet.shell` 拉起/结束本进程（见 `docs/API-CONTRACT.md`）。
+状态读 pidfile，所以无论壳是按钮起的还是双击 `启动小毛.command` 起的，按钮都认得出；
+壳自己还有单实例保护（已有活着的实例时新实例直接退出），不会叠出两只。
 
 ## 交互
 

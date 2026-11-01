@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## 0.3.2（2026-11-01）
+
+### 桌宠壳
+
+- **新增：点击真穿透（窗口随内容收缩）**——原 hitTest 白名单只能在 AppKit 层丢事件，WindowServer 已把点击判给壳窗口（640×720 的透明玻璃），后面 App 点不到。曾试过 CGS 窗口形状（`CGSSetWindowShape`）：坐标约定对不上且**连渲染一起裁**（小毛活着但隐形），弃用。最终方案：壳窗口随页面报告的可点区域收缩（右下角锚定，stage 定位固定 ⇒ 小毛纹丝不动），卡片高度与视口解耦（固定 480px）防止窗口伸缩反馈回路；窗口外点击天然直达下层。
+- **修复：恢复的窗口位置会把小毛放回屏幕外**——保存的位置 {{1218,-19}} 挂在屏幕右缘外（屏幕 1512pt 宽，窗口右缘 1858pt），她本人活着但站在不可见区域，看起来就是「放出去没了」。现在恢复前校验小毛站立处（窗口右下 220×300）是否整块在屏内，不在就回退默认位置并留日志。
+- **新增：跟随宿主换端口**——桌面版重启会换 web 端口，壳还指着旧 origin 就是反复出现的「连接中断」。连续 3 次拉取失败后扫 `$DSH_HOME/agent-tree-dock-*.json`（文件名带端口，取最新），用公开路由探活成功即自动跟随；约 30 秒内自愈。`--token` 模式不自动跟随（token 按次发放），日志提示重新放她到桌面。
+- **修复：立绘「下载成功但画面不换装」（蓝色大脑袋）**——立绘/状态注入是单次 `evaluate`，若那一刻 WKWebView 还没加载完 `pet.html`，注入落在即将被丢弃的上下文里，数据永久丢失；而立绘只在下载完成时注入一次，错过就永远停在壳内置占位形象。0.3.1 的 `--public` 模式无鉴权流程、轮询极快，把窗口期放大成必现。现在：注入前先落页面全局 `__petSpriteData` / `__petStateData`（页面脚本就绪时自取），并且壳以页面 rects 上报为「活着」心跳，发现立绘/首份 state 尚未送达就补发——时序无论怎么排都能收敛。新增恒落盘诊断日志 `$DSH_HOME/storages/dsh-maoxuan-pet.shell.log`（256KB 自动截断；宿主按钮拉起时 stdio 被丢弃，这份日志是唯一黑盒透视）。
+
+## 0.3.1 — 2026-11-01
+
+修复：预设面板上 maoxuan-pet 显示「加载失败 / Failed to load」；桌宠壳补上宿主鉴权支持。
+
+### 修复
+- **preset 挂载必败的缺参**：`cordis.patch.yml` 里 preset 的 `tool-todo` 子项没有给 `allowParallelInProgress`，而宿主的 `@deepseek-ai/dsh-tool-todo` 从 rc.2 起就把它声明为 **required**（且无默认值可合并）。挂载时校验失败，注册表把该行标记为 `broken`，界面徽章显示「加载失败」，悬停可见原文：`tool-todo (@deepseek-ai/dsh-tool-todo): invalid config: $.allowParallelInProgress missing required value`。现在显式声明 `allowParallelInProgress: false`（本预设一次只推进一件事，与 `false` 语义一致）。
+- 用 dsh 0.2.1-rc.5 运行时在真实桌面同构环境里探测过 `agentPresets.list()`：修复前 maoxuan-pet 带 `broken` 字段，修复后消失（dev-assistant 的失败是 dsh-plugin-dev-workflow 自己的 `connection` 注入问题，与本插件无关）。
+
+### 桌宠壳
+- **壳不再被宿主鉴权卡死**：DSH `0.2.1-rc.2` 起 Web API 全部要鉴权（launch token 只在 `GET /` 换签名 cookie，`/api/*` 裸请求一律 401，且不接受 Authorization 头），而 token 只有 CLI 宿主会打印、桌面 App 从不外泄——壳此前在桌面 App 旁边永远是「连接中断」。现在两条路：
+  - **`--public`（默认推荐）**：插件在 web server 上直接注册一组 loopback 公开路由 `SHELL_ROUTES`（`/dsh-maoxuan-pet/pet.json`、`asset.png`、`generate`、`dismiss`），GET 只读、POST 强制 JSON + `x-dsh-maoxuan-pet: 1` 自定义头（跨站页面发不出来，非 CSRF 洞）、监听只绑 loopback；壳不需要 token 也不需要 cookie，桌面 App 旁边同样满血。可用 `publicRoutes: false` 关闭。
+  - **`--token=<TOKEN>`**：给 CLI 宿主用，`GET /?token=…` 换 `dsh-auth-*` 签名 cookie（URLSession 内存 jar、不落盘、遇 401 自动重换）。
+- **桌面模式互斥显示（新）**：壳在桌面上时，界面里的小毛自动隐身，右下角只留一枚「小毛在桌面上 · 点此收回」小徽章；收回（或右键壳退出）后界面宠物自动回来。避免「两只小毛同时显示」的困惑。
+- **界面开关（新）**：红皮书卡片页脚新增 **「放她到桌面 / 收回桌宠」**——宿主新增第六条路由 `GET|POST /api/dsh-maoxuan-pet.shell`（状态快照 + launch/quit，origin 只接受 `http://127.0.0.1:<port>` 防注入；产物缺失时先自动跑 `desktop/build.sh`，最长 120s）。壳写 pidfile（`$DSH_HOME/storages/dsh-maoxuan-pet.shell.pid`，读取方探活、退出清理）+ 自身单实例保护，手动双击与按钮互相认得，不会叠出两只。已对活宿主端到端验证：GET 状态 → launch 起进程并落 pidfile → 重复 launch 幂等 → quit 退净并清 pidfile。
+- **双击备用**：仓库根目录新增 `启动小毛.command`——自动编译（首次）、自动找最近写入的 `~/.dsh/agent-tree-dock-<port>.json` 得到宿主地址、自动 `--public` 起壳，重复双击不会叠出第二只。
+- 验证：13091（鉴权过、插件未装：404 非 401）、30888/30891（maoxuan 宿主：`--public` 下 state 200 + 四帧立绘原生拉取、POST 缺头 403 / 带头 200）；`verify/host.test.mjs` 新增 2 条公开路由用例（假 ctx 的 webServer 记录注册 + 走 node 风格 req/res 断言 200/403），全套 20/20。
+
+### 排查备注
+- 挂载失败只在客户端读取名册（打开预设面板）时可见，宿主启动日志默认不打印该警告，所以此前一直没暴露。
+
 ## 0.3.0 — 2026-11-01
 
 新能力：独立 macOS 桌宠壳——小毛从 DSH 界面里走出来，站到真正的桌面上；DSH 最小化甚至关掉界面，她都站在原地。
