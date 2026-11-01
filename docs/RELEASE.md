@@ -10,9 +10,9 @@
 | 包名 | `dsh-plugin-maoxuan-pet`（unscoped，npm 上未占用） |
 | 版本 | `0.3.0` |
 | 代码许可 | MIT（`LICENSE`）；语料与立绘的非 MIT 声明见 `NOTICE` |
-| 打包清单 | `npm pack --dry-run` → 59 files / 1.26 MB（含 33 篇语料；0.2.1 起立绘降到 256×539，包体从 4.2 MB 降下来） |
+| 打包清单 | `npm pack --dry-run` → 64 files / 1.3 MB（含 33 篇语料 + desktop/ 5 个壳源码文件；`desktop/build/` 产物靠 files 逐文件点名排除，勿改回整目录收录） |
 | GitHub 账号 | `gh auth status` → `yuna78`（scopes 含 `repo`） |
-| npm 凭据 | **当前 `npm whoami` 返回 401，必须先 `npm login` 或换 token** |
+| npm 凭据 | `npm whoami` → `yuna78`（2026-11-01 复核有效）；发布需 2FA 一次性验证码，`npm publish --otp=<6位码>` |
 | 市场收录机制 | awesome-dsh-plugin 索引 **npm 包**（`versions[].source.type = npm`），并用 `package.json` 的 `repository.url` 关联 GitHub 仓；**没有投稿表单**，发布后由爬虫收录 |
 
 ## 1. 发布前自检（每次都跑）

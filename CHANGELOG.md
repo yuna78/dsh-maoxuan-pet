@@ -13,7 +13,7 @@
 - **构建与运行**：`npm run pet:build`（swiftc 约几秒，模块缓存收进项目内）/ `npm run pet`；参数 `--origin=` / `--port=` / `--reset` / `--verbose`；详见 `desktop/README.md`。
 
 ### 打包
-- `package.json` `files` 新增 `desktop/`（源码随 npm 包分发；`desktop/build/` 产物已 gitignore 不进包体）。
+- `package.json` `files` 收录 `desktop/` 五个源码文件（Info.plist/README/build.sh/maoxuan-pet.swift/pet.html），源码随 npm 包分发；`desktop/build/` 构建产物（二进制 + Swift 模块缓存，约 70MB）不进包体——`.gitignore` 只拦 git 不拦 `npm pack`，files 白名单目录内的产物必须逐文件点名（0.3.0 发布前实测修正）。
 
 ## 0.2.3 — 2026-11-01
 
