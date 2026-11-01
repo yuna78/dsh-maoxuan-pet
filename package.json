@@ -55,6 +55,7 @@
     "scripts/audit-corpus-coverage.mjs",
     "README.md",
     "CHANGELOG.md",
+    "README.en.md",
     "NOTICE",
     "LICENSE",
     "package.json"
