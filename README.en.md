@@ -14,6 +14,22 @@ dsh plugin --profile web add dsh-plugin-maoxuan-pet
 Requirements: DSH `>=0.2.1-rc.2 <0.3.0`, Node `^22.19.0 || >=24.0.0`. Web shell only.
 Source install / uninstall / troubleshooting: [docs/INSTALL.md](docs/INSTALL.md).
 
+## Stand on the real desktop (macOS, optional)
+
+The web pet lives inside the DSH window and disappears when it is minimized — a hard browser
+sandbox boundary. `desktop/` ships a **standalone-process pet shell** (pure Swift + system
+WebKit, ~450 lines, zero dependencies): transparent, always-on-top, visible on all Spaces.
+Minimize DSH or close the window entirely — she stays. The plugin still owns the brain (the
+hourly essay reading); the shell only relocates the display.
+
+```bash
+npm run pet:build   # swiftc build, a few seconds
+npm run pet         # she stands at the bottom-right of your screen
+```
+
+Click to open the red-book card, drag to move (position is remembered), right-click for
+reset/quit. See [desktop/README.md](desktop/README.md) for details.
+
 ## Screenshot
 
 ![red-book bubble](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/docs/screenshot-hero.png)
@@ -70,7 +86,10 @@ fan-made character; not affiliated with DeepSeek.
 
 ## Known limitations
 
-- web shell only (`dsh.client.platform: web`) — no pet in the terminal / TUI;
+- web pet only (`dsh.client.platform: web`) — no pet in the terminal / TUI; on macOS use the
+  desktop shell above to leave the window;
+- the desktop shell is macOS-only (system WebKit); Windows / Linux need a Tauri 2 / Electron
+  shell — `pet.html` can be reused as-is;
 - the timer only runs while this `dsh web` process is alive; a stopped process does not catch up,
   and on restart `nextRunAt` decides whether to run once more;
 - each headless generation is a fresh session (no shared context): stable, but she "doesn't

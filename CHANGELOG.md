@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 0.3.0 — 2026-11-01
+
+新能力：独立 macOS 桌宠壳——小毛从 DSH 界面里走出来，站到真正的桌面上；DSH 最小化甚至关掉界面，她都站在原地。
+
+### 桌宠壳（`desktop/`）
+- **为什么需要它**：Web 宠物是 `position:fixed` 的 DOM，永远画不出浏览器视口之外——DSH 最小化她就没。DSH 自带宠物能「跑出去」，是因为壳层进程建了第二个原生窗口（透明、置顶、跨所有 Space）。本壳用纯 Swift + 系统 WebKit（单文件约 450 行、零第三方依赖）给小毛配了同款独立窗口，进程独立于 DSH。
+- **窗口参数对照**（从 DSH Tauri 壳层二进制核实的参数 → 本壳实现）：`transparent`/`alwaysOnTop`/`visibleOnAllWorkspaces`/`skipTaskbar` → 透明无边框 `NSWindow` + `.floating` + `canJoinAllSpaces` + accessory 策略（不占 Dock、不进 Cmd-Tab）；`set_pet_input_region`/`set_pet_ignore_cursor_events` → 容器 `hitTest` 白名单矩形，矩形外鼠标事件全部穿透回桌面。
+- **数据通道**：`URLSession`（ephemeral）原生轮询既有同源路由——state 平时 20s、生成中 3s、离线 8s；`再督促`/`收起` POST 同源接口；宿主 `index.js` 零改动，Web 宠物照常并存。
+- **素材也走原生层**：WebKit 的 ATS 不认 loopback 豁免，`file://` 页面直挂 `http://127.0.0.1` 的图会被拦（只剩占位鲸），所以精灵图由 URLSession 拉取后转 data URL 注入（`window.__petSprites`）；WebKit 零网络请求，壳零磁盘写入（`nonPersistent` 数据存储 + ephemeral 会话）。
+- **交互语义与 Web 宠物一致**：红皮书卡片、新气泡自动弹出、打开 600ms 后标已读、翻书中状态、倒计时标签、`‹ ›` 回翻、Esc 收起；右键小毛 = 复位位置 / 退出；拖小毛或卡片标题栏 = 整窗移动（`screenX/screenY` 差值，无反馈回环），位置存 `UserDefaults`（suite `dsh-maoxuan-pet.window`）跨启动记忆。
+- **构建与运行**：`npm run pet:build`（swiftc 约几秒，模块缓存收进项目内）/ `npm run pet`；参数 `--origin=` / `--port=` / `--reset` / `--verbose`；详见 `desktop/README.md`。
+
+### 打包
+- `package.json` `files` 新增 `desktop/`（源码随 npm 包分发；`desktop/build/` 产物已 gitignore 不进包体）。
+
 ## 0.2.3 — 2026-11-01
 
 首次安装修复：模型配置自动从宿主 profile 桥接进 headless 子进程，新装机基本零配置。

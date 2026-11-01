@@ -1,4 +1,4 @@
-# 鲸鱼娘 · 小毛 —— 住在 DSH 右下角、每小时陪你读一篇毛选的桌宠
+# 鲸鱼娘 · 小毛 —— 每小时陪你读一篇毛选的桌宠，macOS 上还能站上真正的桌面
 
 红皮书气泡 + 四帧立绘；每条内容 = 原文引文（带来源日期）＋ 一句说给你听的督促 ＋ 一条能当天验证的启示，整条 ≤ 200 字。
 
@@ -12,6 +12,17 @@ dsh plugin --profile web add dsh-plugin-maoxuan-pet
 
 - 要求：DSH `>=0.2.1-rc.2 <0.3.0`、Node `^22.19.0 || >=24.0.0`，仅 Web 界面；
 - 从源码安装、卸载、排错：[docs/INSTALL.md](docs/INSTALL.md)。
+
+## 让她站上真正的桌面（macOS，可选）
+
+Web 宠物住在 DSH 界面里，界面最小化她就跟着没了——这是浏览器沙箱的硬边界。`desktop/` 目录自带一个**独立进程的桌宠壳**（纯 Swift + 系统 WebKit，约 450 行、零依赖）：透明、置顶、跨所有桌面空间，DSH 最小化甚至关掉界面她都站着；毛选的灵魂（每小时读一篇）仍由插件负责，壳只把「显示器」搬了出来。
+
+```bash
+npm run pet:build   # swiftc 编译，几秒
+npm run pet         # 她就站在屏幕右下角了
+```
+
+点她开合红皮书卡片、拖她换位置（下次还在那儿）、右键她 = 复位位置 / 退出。详见 [desktop/README.md](desktop/README.md)。
 
 ## 界面
 
@@ -67,7 +78,8 @@ dsh plugin --profile web add dsh-plugin-maoxuan-pet
 
 ## 已知限制
 
-- 只支持 Web 界面（`dsh.client.platform: web`），终端 / TUI 里没有宠物；
+- Web 宠物只支持 Web 界面（`dsh.client.platform: web`），终端 / TUI 里没有宠物；macOS 想让她离开界面，用上面的桌宠壳；
+- 桌宠壳仅 macOS（系统 WebKit）；Windows / Linux 需要 Tauri 2 / Electron 起同款壳，`pet.html` 可直接复用；
 - 定时器只在这个 `dsh web` 进程活着时走；进程停了不会补跑，重启后按 `nextRunAt` 决定是否补一次；
 - headless 生成每次是独立会话（不复用上下文）：稳定，但「不记得昨天说过什么」——所以 prompt 里带最近 6 条督促来避免重复。
 

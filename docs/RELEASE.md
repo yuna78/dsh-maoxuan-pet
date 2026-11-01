@@ -8,7 +8,7 @@
 | 项 | 现状（2026-11-01 核对） |
 |---|---|
 | 包名 | `dsh-plugin-maoxuan-pet`（unscoped，npm 上未占用） |
-| 版本 | `0.2.3` |
+| 版本 | `0.3.0` |
 | 代码许可 | MIT（`LICENSE`）；语料与立绘的非 MIT 声明见 `NOTICE` |
 | 打包清单 | `npm pack --dry-run` → 59 files / 1.26 MB（含 33 篇语料；0.2.1 起立绘降到 256×539，包体从 4.2 MB 降下来） |
 | GitHub 账号 | `gh auth status` → `yuna78`（scopes 含 `repo`） |
