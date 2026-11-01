@@ -56,6 +56,21 @@ gh repo create yuna78/dsh-maoxuan-pet --public --source=. --remote=origin --push
 `package.json` 里的 `repository` / `homepage` / `bugs` 目前按**方案 A** 写成 `yuna78/dsh-maoxuan-pet`；
 若选方案 B，先改这三个字段再 publish（npm 版本号不能复用，顺序不能反）。
 
+## 3.5 发布后体检（一条命令）
+
+```bash
+node scripts/post-publish-check.mjs            # 只报告：npm latest / repository / 市场收录
+node scripts/post-publish-check.mjs --strict   # 门禁：版本不符或市场未收录则 exit 1
+```
+
+注意两个真实踩过的坑：
+
+1. **占位版本**：首次发布前若先推了一个 `0.0.0-stage` 之类的 stub 占名，`latest` 会指向它。发完正式版后建议：
+   ```bash
+   npm deprecate dsh-plugin-maoxuan-pet@0.0.0-stage "占位版本，请使用 0.2.0"
+   ```
+2. **2FA**：账号开了 2FA 时 `npm publish` 会报 `EOTP`，需要 `--otp=<6 位动态码>`，动态码 30 秒过期——要么你在终端交互式输入，要么拿到码后立刻发。
+
 ## 4. 等市场收录 + 在本地索引里核对
 
 ```bash
