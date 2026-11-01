@@ -1,55 +1,46 @@
-# dsh-maoxuan-pet · Xiao Mao, the whale-girl desktop pet
+# Xiao Mao, the whale-girl desktop pet — one essay an hour in the corner of DSH
 
-[![verify](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml/badge.svg)](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml) [![npm](https://img.shields.io/npm/v/dsh-plugin-maoxuan-pet.svg)](https://www.npmjs.com/package/dsh-plugin-maoxuan-pet)
-
-A floating pet living in the DeepSeek Harness (dsh) web shell. Every hour she reads one
-essay from *Selected Works of Mao Zedong*, turns it into **one ≤200-character nudge** for a
-founder — a verbatim quote or excerpt, one line of pressure in her own voice, and one rule
-with a way to verify it — and shows it in a red-book speech bubble.
-
-![bubble](docs/screenshot-hero.png)
-
-> 中文说明见 [README.md](README.md)。
-
-## What it does
-
-| Piece | Behaviour |
-|---|---|
-| Pet | 4 sprite frames (idle / talk / blink / read), draggable, position remembered |
-| Bubble | dark-red "book cover" with a gold spine; anchored to the **left** of the pet, so the pet never moves; `收起` / `再督促` are text-only buttons |
-| Reading | opening the card marks that bubble read — the unread badge disappears; the bubble you are reading never gets swapped out |
-| History | `‹ ›` walks back through previous bubbles; with nothing unread you still see the last one produced |
-| Timing | one generation per hour (`everySeconds`), quiet hours, `maxBubbles` history cap |
-| Preset | `maoxuan-pet` — a "Selected Works startup advisor" preset with the bundled corpus registered as the `maoxuan-vademecum` skill |
+A red-book speech bubble plus four sprite frames: every card = a cited line from a Mao essay
+(with source date) + one line of pressure for you + one rule you can verify today, capped at
+**200 characters** in total.
 
 ## Install
 
 ```bash
 dsh plugin --profile web add dsh-plugin-maoxuan-pet
-# restart dsh web (Ctrl+C, then `dsh web` again), reload the page
+# then restart dsh web (Ctrl+C, then `dsh web` again) and reload the page
 ```
 
-Requirements: dsh `>=0.2.1-rc.2 <0.3.0`, Node `^22.19.0 || >=24.0.0`. Web shell only.
+Requirements: DSH `>=0.2.1-rc.2 <0.3.0`, Node `^22.19.0 || >=24.0.0`. Web shell only.
+Source install / uninstall / troubleshooting: [docs/INSTALL.md](docs/INSTALL.md).
 
-## How a bubble is produced
+## Screenshot
 
-```
-everySeconds → pick next verified essay → template rotates quote/excerpt/summary
-             → spawn `dsh --profile headless --json "<prompt>"` (60s-ish, one model call)
-             → parse JSON {pua, lesson, axis, gist}
-             → quote/excerpt must match the corpus verbatim, otherwise fall back to summary
-             → fitLesson(): cite + pua + lesson ≤ 200 chars
-             → persist to $DSH_HOME/storages/dsh-maoxuan-pet.json (atomic write)
-             → client polls /api/dsh-maoxuan-pet.state every 20s
-```
+![red-book bubble](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/docs/screenshot-hero.png)
 
-If the model call fails (no credentials, timeout, non-JSON), the plugin degrades to a **local
-excerpt** and labels it `离线摘录` in the footer — it never invents a quote.
+The bubble hangs to the **left** of the pet, so the pet never moves. Opening the card marks it
+read (the unread badge disappears); `‹ ›` walks back through history; `收起` / `再督促` are
+text-only buttons. New bubbles pop up on the hour.
 
-- Templates: `quote` (golden line) / `excerpt` (verbatim whole sentences) / `summary` (her own gist).
-- Lesson axes: 客户 customers / 项目 projects / 组织 organisation / 现金流 cash flow / 决策 decisions / 自律 self-discipline.
-- The 200-character cap is a hard invariant, not a suggestion: `fitLesson()` shrinks the lesson,
-  never the quote.
+## Xiao Mao
+
+| standing | talking | blinking | reading |
+|:--:|:--:|:--:|:--:|
+| ![idle](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/assets/pet-idle.png) | ![talk](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/assets/pet-talk.png) | ![blink](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/assets/pet-blink.png) | ![read](https://raw.githubusercontent.com/yuna78/dsh-maoxuan-pet/main/assets/pet-read.png) |
+
+The four frames share one canvas and one foot line, so switching never makes her jump. A
+fan-made character; not affiliated with DeepSeek.
+
+## What it does
+
+| Ability | Behaviour |
+|---|---|
+| **One essay an hour** | 33 bundled public-domain essays of Mao Zedong, rotated so she doesn't reread the last one; templates rotate between `quote` / `excerpt` / `summary` |
+| **Never invents a quote** | `quote` / `excerpt` must match the corpus verbatim, otherwise she falls back to `summary`; if the model retells the original, the whole card is dropped |
+| **Six angles** | customers / projects / organisation / cash flow / decisions / self-discipline — one per card, with a hard rule and a way to verify it |
+| **You can ask back** | ships the `maoxuan-pet` ("Selected Works startup advisor") preset and the `maoxuan-vademecum` skill; start a new session and ask "given Mao, what should I do next?" |
+| **Doesn't nag** | quiet hours (02:00–08:00 by default), daily cap (24), remembered position, unread badge clears only when read, `‹ ›` history |
+| **Degrades gracefully** | no credentials / timeout / non-JSON → a local excerpt labelled 「离线摘录」, never passed off as model output |
 
 ## Config
 
@@ -60,24 +51,30 @@ excerpt** and labels it `离线摘录` in the footer — it never invents a quot
     everySeconds: 3600      # hourly
     firstDelaySeconds: 90
     quietHours: [2, 8]      # no pings between 02:00 and 08:00 local time
+    dailyLimit: 24
     maxBubbles: 40
     headless: true          # false = only local excerpts, zero model calls
+    dshBin: dsh
     profile: headless
     timeoutMs: 180000
     businessContext: "40, indie developer, small-tool SaaS"
 ```
 
-## Verification
+## Corpus
 
-```bash
-node verify/smoke.mjs        # 24 structural checks
-node verify/contract.mjs     # 38 pure-function tests
-node verify/host.test.mjs    # 18 fake-ctx end-to-end tests (no network, no subprocess)
-node tools/audit-corpus-coverage.mjs   # quote must be verbatim in all 33 essays
-npm pack --dry-run           # 59 files / 1.3 MB, no .dsh-dev / assets/raw / verify
-```
+- 33 essays, all `verified: true`, covering volumes I–V;
+- texts come from the [Chinese Marxist Internet Archive](https://www.marxists.org/chinese/maozedong/index.htm), bundled for personal study only;
+- refresh / extend: `npm run corpus`;
+- licensing and redistribution limits: [NOTICE](NOTICE) and [corpus/README.md](corpus/README.md).
 
-CI runs the same set on Node 22 and 24. See [verify/README.md](verify/README.md).
+## Known limitations
+
+- web shell only (`dsh.client.platform: web`) — no pet in the terminal / TUI;
+- the timer only runs while this `dsh web` process is alive; a stopped process does not catch up,
+  and on restart `nextRunAt` decides whether to run once more;
+- each headless generation is a fresh session (no shared context): stable, but she "doesn't
+  remember what she said yesterday" — hence the last 6 nudges are passed into the prompt to avoid
+  repeats.
 
 ## License and third-party content
 
@@ -86,9 +83,15 @@ CI runs the same set on Node 22 and 24. See [verify/README.md](verify/README.md)
   [Chinese Marxist Internet Archive](https://www.marxists.org/chinese/maozedong/index.htm) and
   are bundled for personal study only. See [NOTICE](NOTICE). Delete `corpus/articles/` to drop it;
   quote/excerpt templates then degrade safely to summary.
-- **Sprites**: AI-generated (gpt-image-2), a fan-made "whale girl" character — not affiliated with
+- **Sprites and icon** (`assets/`): a fan-made "whale girl" character — not affiliated with
   DeepSeek. See [assets/PROVENANCE.md](assets/PROVENANCE.md).
 
 This plugin is a reading/nudging tool that treats the essays as a source of product and
 entrepreneurship method. It is not affiliated with DeepSeek or any publisher, and it is not
 political advocacy.
+
+---
+
+Package `dsh-plugin-maoxuan-pet` · [中文](README.md) · technical details in [docs/](docs/): [API-CONTRACT.md](docs/API-CONTRACT.md) · [CONTENT-FRAMEWORK.md](docs/CONTENT-FRAMEWORK.md) · [verify/README.md](verify/README.md)
+
+[![verify](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml/badge.svg)](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml) [![npm](https://img.shields.io/npm/v/dsh-plugin-maoxuan-pet.svg)](https://www.npmjs.com/package/dsh-plugin-maoxuan-pet)
