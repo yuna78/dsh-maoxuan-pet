@@ -1,0 +1,80 @@
+{
+  "name": "dsh-plugin-maoxuan-pet",
+  "version": "0.2.0",
+  "description": "DSH 悬浮宠物「鲸鱼娘·小毛」：每小时读一篇毛选，给创业中的你说一句能动手的督促；内置毛选公开语料与 maoxuan-pet preset。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "desktop-pet",
+    "pet",
+    "maoxuan",
+    "mao-zedong",
+    "startup",
+    "productivity",
+    "毛选",
+    "鲸鱼娘"
+  ],
+  "type": "module",
+  "main": "./index.js",
+  "icon": "assets/icon.svg",
+  "author": "Yuna",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuna78/dsh-maoxuan-pet.git"
+  },
+  "homepage": "https://github.com/yuna78/dsh-maoxuan-pet#readme",
+  "bugs": {
+    "url": "https://github.com/yuna78/dsh-maoxuan-pet/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json",
+    "./icon": "./assets/icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "assets/",
+    "corpus/",
+    "skill/",
+    "docs/",
+    "scripts/audit-corpus-coverage.mjs",
+    "README.md",
+    "CHANGELOG.md",
+    "NOTICE",
+    "LICENSE",
+    "package.json"
+  ],
+  "scripts": {
+    "corpus": "node scripts/fetch-corpus.mjs",
+    "test": "node verify/smoke.mjs && node verify/contract.mjs && node verify/host.test.mjs",
+    "test:contract": "node verify/contract.mjs",
+    "audit:corpus": "node scripts/audit-corpus-coverage.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  }
+}

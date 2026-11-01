@@ -1,0 +1,29 @@
+# NOTICE
+
+dsh-plugin-maoxuan-pet
+Copyright (c) 2026 Yuna and contributors
+
+本文件说明本仓库里**不属于 MIT 许可**的内容。代码本体见 [LICENSE](LICENSE)。
+
+## 1. 内置毛选语料（`corpus/`）
+
+- 来源：[中文马克思主义文库 · 毛泽东](https://www.marxists.org/chinese/maozedong/index.htm)，抓取日期 2026-10-31，共 33 篇（`corpus/index.json` 记录每篇的 `sourceUrl`）。
+- 著作权归原作者及原出版方所有。本项目对正文的收录**仅用于个人学习、研究**，不构成再出版、发行或商业授权。
+- 若需在商业场景公开引用原文，请自行核对正式出版物并取得授权。
+- **权利人若不希望文本随本包分发**：删除 `corpus/articles/` 即可；此时 `quote`/`excerpt` 模板会安全降级为 `summary`（插件不会编造原文），也可运行 `node scripts/fetch-corpus.mjs` 自行重新获取。
+- 语料不参与 `npm` 之外的再分发声明，也不代表本项目对原文主张任何权利。
+
+## 2. 立绘与图标（`assets/`）
+
+- `pet-idle.png` / `pet-talk.png` / `pet-blink.png` / `pet-read.png`：AI 生成（gpt-image-2，2026-10-31），形象为民间同人设定「鲸鱼娘·小毛」（红军制服、抱《毛泽东选集》）。
+  生成过程与 prompt 记录见 [assets/PROVENANCE.md](assets/PROVENANCE.md)。
+- `icon.svg`：手写 SVG（纯几何图形）。
+- 与 DeepSeek 官方无任何隶属或背书关系。
+
+## 3. 名称与立场
+
+本插件是一个桌宠 / 阅读督促工具，把毛选当作**产品与创业方法论**的文本来源。它不代表 DeepSeek、毛泽东著作出版方或任何政治组织的立场，也不作政治宣传。
+
+## 4. 第三方依赖
+
+运行时只依赖宿主 `@deepseek-ai/dsh`（peer dependency）与 Node 内置模块；`verify/` 与 `scripts/` 不引入任何第三方包。

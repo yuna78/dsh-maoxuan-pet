@@ -1,0 +1,606 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-01T03:34:43.859Z",
+  "edition": "据中文马克思主义文库公开电子文本整理",
+  "sources": [
+    {
+      "name": "中文马克思主义文库 · 毛泽东",
+      "url": "https://www.marxists.org/chinese/maozedong/index.htm"
+    }
+  ],
+  "articles": [
+    {
+      "id": "zhong-guo-she-hui-ge-jie-ji-de-fen-xi",
+      "title": "中国社会各阶级的分析",
+      "year": "1925年12月",
+      "date": "1925-12",
+      "volume": "第一卷",
+      "tags": [
+        "用户分层",
+        "定位",
+        "调查研究"
+      ],
+      "file": "articles/zhong-guo-she-hui-ge-jie-ji-de-fen-xi.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19251201.htm",
+      "quote": "谁是我们的敌人？谁是我们的朋友？这个问题是革命的首要问题。",
+      "summary": "一九二五年党内有两种偏向：只注意同国民党合作，或只注意工人运动，都忘记了农民，普遍感到力量不足，却不知道到哪里去寻找力量。毛泽东按经济地位把中国社会分为地主买办、中产阶级、小资产阶级、半无产阶级、无产阶级和游民无产者，逐一分析各阶级对革命的态度，指出工业无产阶级是革命的领导力量，半无产阶级和小资产阶级是最接近的朋友，动摇的中产阶级要时常提防。全文的方法论是先分清敌友、再决定策略。",
+      "businessAngle": "用用户分层代替直觉判断：把客户按付费能力与决策权分成三档，每档写一句“他现在最想解决什么”，季度复盘时对照检查。",
+      "verified": true
+    },
+    {
+      "id": "hu-nan-nong-min-yun-dong-kao-cha-bao-gao",
+      "title": "湖南农民运动考察报告",
+      "year": "1927年3月",
+      "date": "1927-03",
+      "volume": "第一卷",
+      "tags": [
+        "调查研究",
+        "一线",
+        "群众"
+      ],
+      "file": "articles/hu-nan-nong-min-yun-dong-kao-cha-bao-gao.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-192703.htm",
+      "quote": "革命不是请客吃饭，不是做文章，不是绘画绣花，不能那样雅致，那样从容不迫，文质彬彬，那样温良恭俭让。",
+      "summary": "一九二七年湖南农民运动高涨，党内和党外都指责农民运动“糟得很”。毛泽东用三十二天实地考察湖南五县，把农民协会做的事情逐条摆出来，论证农民运动是革命先锋而不是痞子运动，贫农是打倒封建势力的主力。他指出革命不是请客吃饭，必须依靠群众自己起来行动，并要求把农会工作从政治斗争推进到经济和文化建设。这份报告是“没有调查就没有发言权”的实践样本。",
+      "businessAngle": "别在会议室里判断一线：新产品立项前，自己去跑 5 个真实客户现场，把他们的原话记下来，再决定做不做这个需求。",
+      "verified": true
+    },
+    {
+      "id": "zhong-guo-de-hong-se-zheng-quan-wei-shi-me-neng-gou-cun-zai",
+      "title": "中国的红色政权为什么能够存在？",
+      "year": "1928年10月5日",
+      "date": "1928-10",
+      "volume": "第一卷",
+      "tags": [
+        "生存空间",
+        "差异化",
+        "根据地"
+      ],
+      "file": "articles/zhong-guo-de-hong-se-zheng-quan-wei-shi-me-neng-gou-cun-zai.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19281005.htm",
+      "quote": "红色政权的长期的存在并且发展，除了上述条件之外，还须有一个要紧的条件，就是共产党组织的有力量和它的政策的不错误。",
+      "summary": "一九二八年秋，井冈山根据地处在白色政权的包围和“红旗到底打得多久”的怀疑中。毛泽东先分析国内的政治状况，再总结红色政权能够存在的原因：中国是帝国主义间接统治的半殖民地，军阀割据混战在边界地区留下缝隙；这些地区经历过大革命洗礼，有群众基础；全国革命形势仍在向前发展；有相当力量的红军；共产党组织有力量、政策不错误。他因此主张以根据地为依托长期经营，而不是流动作战。",
+      "businessAngle": "先找“缝隙”再谈规模：列出竞争对手不愿服务、监管又允许的细分场景，评估其中哪个能养活你 12 个月。",
+      "verified": true
+    },
+    {
+      "id": "guan-yu-jiu-zheng-dang-nei-de-cuo-wu-si-xiang",
+      "title": "关于纠正党内的错误思想",
+      "year": "1929年12月",
+      "date": "1929-12",
+      "volume": "第一卷",
+      "tags": [
+        "组织建设",
+        "思想方法",
+        "批评"
+      ],
+      "file": "articles/guan-yu-jiu-zheng-dang-nei-de-cuo-wu-si-xiang.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-192912.htm",
+      "quote": "党内批评是坚强党的组织、增加党的战斗力的武器。",
+      "summary": "一九二九年红军第四军党内存在单纯军事观点、极端民主化、非组织观点、绝对平均主义、主观主义、个人主义等错误思想，削弱了部队战斗力。决议逐条列出这些思想的表现、来源和纠正办法，提出从教育入手，用马克思列宁主义的方法分析政治形势和阶级力量，把党内批评当作坚强组织、增加战斗力的武器，并规定支部建在连上等组织制度，把思想问题落成制度安排。",
+      "businessAngle": "把团队反复出现的争吵写成清单：每条写清具体表现和对业务的代价，季度会上逐条定规则，而不是每次重新吵一遍。",
+      "verified": true
+    },
+    {
+      "id": "xing-xing-zhi-huo-ke-yi-liao-yuan",
+      "title": "星星之火，可以燎原",
+      "year": "1930年1月5日",
+      "date": "1930-01",
+      "volume": "第一卷",
+      "tags": [
+        "长期主义",
+        "形势判断",
+        "信心"
+      ],
+      "file": "articles/xing-xing-zhi-huo-ke-yi-liao-yuan.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19300105.htm",
+      "quote": "它是站在海岸遥望海中已经看得见桅杆尖头了的一只航船，它是立于高山之巅远看东方已见光芒四射喷薄欲出的一轮朝日，它是躁动于母腹中的快要成熟了的一个婴儿。",
+      "summary": "一九三○年初，红军中有人对时局悲观，怀疑农村根据地能否长期坚持。毛泽东从中国是许多帝国主义争夺的半殖民地这一特点出发，说明小块红色区域的建立和发展是必然的，批评了单纯流动游击和“先争取群众后建立政权”的想法，并用航船、朝日、婴儿三个比喻说明革命高潮快要到来。他要的是用积极态度去创造条件，而不是坐等条件成熟。",
+      "businessAngle": "用“未来 12 个月一定会发生什么”检验悲观：为每个悲观判断配一个可观察的反证指标，按季度看它到底有没有发生。",
+      "verified": true
+    },
+    {
+      "id": "fan-dui-ben-ben-zhu-yi",
+      "title": "反对本本主义",
+      "year": "1930年5月",
+      "date": "1930-05",
+      "volume": "第一卷",
+      "tags": [
+        "调查研究",
+        "实践",
+        "反教条"
+      ],
+      "file": "articles/fan-dui-ben-ben-zhu-yi.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193005.htm",
+      "quote": "调查就像“十月怀胎”，解决问题就像“一朝分娩”。调查就是解决问题。",
+      "summary": "一九三○年红军中教条主义盛行，开口闭口“拿本本来”，把上级指示当成真理，脱离实际瞎指挥。毛泽东提出“没有调查，没有发言权”，说明调查就是解决问题，反对把书本和上级决议神圣化，强调马克思主义的本本必须同中国实际情况相结合。文章最后给出开调查会、定纲目、亲身出马、自己做记录等七条具体技术，把认识论落成可执行的动作。",
+      "businessAngle": "任何决策前先做一次 30 分钟用户访谈，把判断句“我认为”换成“用户说过”，并把访谈原话存档备查。",
+      "verified": true
+    },
+    {
+      "id": "bi-xu-zhu-yi-jing-ji-gong-zuo",
+      "title": "必须注意经济工作",
+      "year": "1933年8月12日",
+      "date": "1933-08",
+      "volume": "第一卷",
+      "tags": [
+        "经营",
+        "现金流",
+        "后方"
+      ],
+      "file": "articles/bi-xu-zhu-yi-jing-ji-gong-zuo.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19330812.htm",
+      "quote": "如果不进行经济建设，革命战争的物质条件就不能有保障，人民在长期的战争中就会感觉疲惫。",
+      "summary": "一九三三年国民党加紧经济封锁，根据地食盐、布匹、药材奇缺，红军给养困难；党内有人认为革命战争时期不必搞经济建设，要等战争胜利后再做。毛泽东论证经济工作与战争胜利互为条件：只有发展红色区域的经济，才能供给战争、改善群众生活、扩大红军，因此必须立即开展经济战线上的运动。文章是“后方与前线同等重要”的明确表述。",
+      "businessAngle": "把现金流当作战役供给：每月固定看一次“回款—支出—可支撑月数”三行表，而不是只盯营收增长。",
+      "verified": true
+    },
+    {
+      "id": "guan-xin-qun-zhong-sheng-huo-zhu-yi-gong-zuo-fang-fa",
+      "title": "关心群众生活，注意工作方法",
+      "year": "1934年1月27日",
+      "date": "1934-01",
+      "volume": "第一卷",
+      "tags": [
+        "用户价值",
+        "工作方法",
+        "细节"
+      ],
+      "file": "articles/guan-xin-qun-zhong-sheng-huo-zhu-yi-gong-zuo-fang-fa.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19340127.htm",
+      "quote": "我们应该深刻地注意群众生活的问题，从土地、劳动问题，到柴米油盐问题。",
+      "summary": "一九三四年江西根据地要动员群众参加战争，一些干部只讲任务、不管群众的柴米油盐。毛泽东把关心群众生活与工作方法并列：从土地、劳动到柴米油盐、生老病死都要注意，只有真正解决群众的实际问题，群众才会真心拥护、自愿参加革命。文章同时批评官僚主义的命令方式，主张用耐心说服和具体帮助代替强迫命令，把动员建立在服务之上。",
+      "businessAngle": "把客户成功拆成可检查的小事：交付后一周内回访一次，问清哪一步最麻烦，当天就修掉，再记录客户愿意续费的理由。",
+      "verified": true
+    },
+    {
+      "id": "shi-jian-lun",
+      "title": "实践论",
+      "year": "1937年7月",
+      "date": "1937-07",
+      "volume": "第一卷",
+      "tags": [
+        "认识论",
+        "实践",
+        "迭代"
+      ],
+      "file": "articles/shi-jian-lun.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193707.htm",
+      "quote": "你要知道梨子的滋味，你就得变革梨子，亲口吃一吃。",
+      "summary": "一九三七年党内同时存在经验主义和教条主义，前者止于片面经验，后者把书本当真理。毛泽东从实践是认识的来源讲起，说明认识要经过由感性到理性、再由理性回到实践的两次飞跃，指出真理的标准只能是社会实践。他用“要知道梨子的滋味就得亲口吃一吃”说明直接经验的意义，并把“实践、认识、再实践、再认识”的循环往复概括为认识不断深化的规律。",
+      "businessAngle": "小步上线、按反馈改：每个想法先做最小可验证版本，一周内用真实数据决定加码还是放弃。",
+      "verified": true
+    },
+    {
+      "id": "mao-dun-lun",
+      "title": "矛盾论",
+      "year": "1937年8月",
+      "date": "1937-08",
+      "volume": "第一卷",
+      "tags": [
+        "主要矛盾",
+        "分析框架"
+      ],
+      "file": "articles/mao-dun-lun.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193708.htm",
+      "quote": "研究任何过程，如果是存在着两个以上矛盾的复杂过程的话，就要用全力找出它的主要矛盾。",
+      "summary": "一九三七年抗日民族统一战线内部关系复杂，党内对矛盾缺乏系统分析，容易把复杂局面简单化。毛泽东先讲矛盾的普遍性和特殊性，再讲主要矛盾和矛盾的主要方面，说明研究复杂过程必须全力找出起决定作用的那一个矛盾，抓住它，一切问题就迎刃而解；并论述矛盾诸方面的同一性和斗争性以及对抗在矛盾中的地位。全篇给出的是一套可操作的分析程序：先分解，再找主要，再看转化。",
+      "businessAngle": "每周只定一个“主要矛盾”：写下本周唯一必须解决的那件事，其余任务明确标为降级，不许同时推进五件事。",
+      "verified": true
+    },
+    {
+      "id": "fan-dui-zi-you-zhu-yi",
+      "title": "反对自由主义",
+      "year": "1937年9月7日",
+      "date": "1937-09",
+      "volume": "第二卷",
+      "tags": [
+        "团队",
+        "纪律",
+        "执行力"
+      ],
+      "file": "articles/fan-dui-zi-you-zhu-yi.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19370907.htm",
+      "quote": "事不关己，高高挂起；明知不对，少说为佳；明哲保身，但求无过。",
+      "summary": "一九三七年抗战局面初开，党内一部分人讲关系不讲原则，对错误言行不愿批评。毛泽东列出自由主义的十一种表现，如事不关己高高挂起、明哲保身但求无过、当面不说背后乱说、命令不服从个人意见第一，指出其来源是小资产阶级的自私自利，后果是组织涣散、政策不能贯彻。他主张用积极的思想斗争代替一团和气，把组织纪律当作战斗力的来源。",
+      "businessAngle": "把沉默当成风险信号：会上无人反对的方案，要求至少一人书面写出反对理由，再决定是否执行。",
+      "verified": true
+    },
+    {
+      "id": "lun-chi-jiu-zhan",
+      "title": "论持久战",
+      "year": "1938年5月",
+      "date": "1938-05",
+      "volume": "第二卷",
+      "tags": [
+        "战略",
+        "长期竞争",
+        "阶段论"
+      ],
+      "file": "articles/lun-chi-jiu-zhan.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193805b.htm",
+      "quote": "武器是战争的重要的因素，但不是决定的因素，决定的因素是人不是物。",
+      "summary": "一九三八年抗战进入相持前夜，“亡国论”和“速胜论”两种情绪并存。毛泽东从日中双方的特点出发，逐条对比强弱、大小、多助寡助，指出战争只能是持久战，必然经历战略防御、战略相持、战略反攻三个阶段；反对只看到武器的作用，强调决定的因素是人不是物，兵民是胜利之本。全篇示范了在信息不完整、双方力量悬殊时如何做结构性判断。",
+      "businessAngle": "用阶段论做预期管理：把你所在行业的周期拆成防御、相持、反攻三段，分别定投入强度和考核指标，别用反攻期的标准要求防御期。",
+      "verified": true
+    },
+    {
+      "id": "zhan-zheng-he-zhan-lue-wen-ti",
+      "title": "战争和战略问题",
+      "year": "1938年11月6日",
+      "date": "1938-11",
+      "volume": "第二卷",
+      "tags": [
+        "战略",
+        "路径选择",
+        "组织"
+      ],
+      "file": "articles/zhan-zheng-he-zhan-lue-wen-ti.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19381106.htm",
+      "quote": "每个共产党员都应懂得这个真理：“枪杆子里面出政权”。",
+      "summary": "一九三八年六届六中全会上，党内需要回答抗日战争中共产党如何处理战争与政治的关系。毛泽东回顾中国革命的战争史，指出革命的中心任务和最高形式是武装夺取政权，“枪杆子里面出政权”，并分析中国政治经济发展不平衡决定了可以走农村包围城市的道路。他要求全党把战争问题当作战略问题来研究，而不是分散地应付一个个战役。",
+      "businessAngle": "战略要落到具体路径：写下你的“农村”是什么——大厂看不上、但你能在其中建立根据地的那块市场，并说明凭什么守得住。",
+      "verified": true
+    },
+    {
+      "id": "wu-si-yun-dong",
+      "title": "五四运动",
+      "year": "1939年5月1日",
+      "date": "1939-05",
+      "volume": "第二卷",
+      "tags": [
+        "青年",
+        "知识结构",
+        "动员"
+      ],
+      "file": "articles/wu-si-yun-dong.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19390501.htm",
+      "quote": "知识分子如果不和工农民众相结合，则将一事无成。",
+      "summary": "一九三九年五四运动二十周年，延安需要给青年一个明确的历史定位。毛泽东指出五四运动是中国反帝反封建的资产阶级民主革命发展到新阶段的表现，其历史功绩在于彻底地不妥协地反帝反封建，并推动了新思想新文化的传播。他强调知识分子如果不和工农民众相结合则将一事无成，把知识分子的方向与工农结合、与实际行动结合绑定在一起。",
+      "businessAngle": "找懂行的人做联合：让你的产品团队和一线业务人员（销售、客服、交付）绑定作战，而不是自己闭门造功能。",
+      "verified": true
+    },
+    {
+      "id": "qing-nian-yun-dong-de-fang-xiang",
+      "title": "青年运动的方向",
+      "year": "1939年5月4日",
+      "date": "1939-05",
+      "volume": "第二卷",
+      "tags": [
+        "青年",
+        "方向",
+        "长期主义"
+      ],
+      "file": "articles/qing-nian-yun-dong-de-fang-xiang.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19390504.htm",
+      "quote": "看一个青年是不是革命的，拿什么做标准呢？拿什么去辨别他呢？只有一个标准，这就是看他愿意不愿意、并且实行不实行和广大的工农群众结合在一块。",
+      "summary": "一九三九年延安青年集会纪念五四，许多青年向往来延安，却不清楚判断进步的标准。毛泽东提出看一个青年是不是革命的只有一个标准，就是看他愿意并且实行和广大工农群众结合，并对比革命前后青年运动的区别，说明知识青年必须到工农中间去、在长期的群众工作中改造自己。文章把抽象的立场问题转换成可观察的行为标准，并把“到工农群众中去”落成具体行动要求。",
+      "businessAngle": "把“是否和用户在一起”变成可检查的指标：统计每周和真实用户对话次数、现场走访次数，纳入团队周报。",
+      "verified": true
+    },
+    {
+      "id": "ji-nian-bai-qiu-en",
+      "title": "纪念白求恩",
+      "year": "1939年12月21日",
+      "date": "1939-12",
+      "volume": "第二卷",
+      "tags": [
+        "职业精神",
+        "标准",
+        "利他"
+      ],
+      "file": "articles/ji-nian-bai-qiu-en.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19391221.htm",
+      "quote": "一个人能力有大小，但只要有这点精神，就是一个高尚的人，一个纯粹的人，一个有道德的人，一个脱离了低级趣味的人，一个有益于人民的人。",
+      "summary": "一九三九年白求恩在晋察冀因手术感染去世，延安举行追悼。毛泽东用三句话概括他的精神：国际主义的精神，毫不利己专门利人的精神，对技术精益求精的精神，并逐条对比党内对工作不负责任、拈轻怕重、自吹自擂的毛病。文章结尾把“能力有大小”与精神境界分开，指出只要有这种精神就是有益于人民的人，并批评鄙薄技术工作、见异思迁的人。",
+      "businessAngle": "用“是否精益求精”考核手艺：给每个交付物定一条可量化的质量标准，并公开检查结果，而不是只考核完成数量。",
+      "verified": true
+    },
+    {
+      "id": "nong-cun-diao-cha-de-xu-yan-he-ba",
+      "title": "《农村调查》的序言和跋",
+      "year": "1941年3月、4月",
+      "date": "1941-03",
+      "volume": "第三卷",
+      "tags": [
+        "调查研究",
+        "一手信息",
+        "方法论"
+      ],
+      "file": "articles/nong-cun-diao-cha-de-xu-yan-he-ba.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-194134.htm",
+      "quote": "要做这件事，第一是眼睛向下，不要只是昂首望天。",
+      "summary": "一九四一年延安整风前夕，党内许多干部凭想象发号施令，对实际情况一知半解。毛泽东为重新印出的《农村调查》写序和跋，回顾自己做过的大规模社会调查，说明只有向社会作调查、向群众请教才能得到真知，提出“眼睛向下”“甘当小学生”，批评那种昂首望天、不做调查就夸夸其谈的作风，并交代开调查会的具体做法。这是整风学习材料的开篇。",
+      "businessAngle": "亲自做一次深度调研：选一个最模糊的业务问题，访谈 10 个当事人、整理原话，再写结论和下一步动作。",
+      "verified": true
+    },
+    {
+      "id": "gai-zao-wo-men-de-xue-xi",
+      "title": "改造我们的学习",
+      "year": "1941年5月19日",
+      "date": "1941-05",
+      "volume": "第三卷",
+      "tags": [
+        "学习",
+        "实事求是",
+        "反空谈"
+      ],
+      "file": "articles/gai-zao-wo-men-de-xue-xi.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19410519.htm",
+      "quote": "无实事求是之意，有哗众取宠之心。",
+      "summary": "一九四一年延安干部教育中理论与实际脱节，学马列只为装饰、不为解决问题。毛泽东主张改造全党的学习方法和学习制度，提出实事求是、有的放矢：用马克思列宁主义之箭去射中国革命之的；要求系统地周密地研究周围环境、研究近百年的中国史、研究国际革命经验。他把“无实事求是之意，有哗众取宠之心”列为主观主义的典型病症，并给出三项具体的学习任务。",
+      "businessAngle": "学之前先问“要解决哪个问题”：每读一本书或上一门课，就写下本周要因此改动的一个具体动作，否则不算学完。",
+      "verified": true
+    },
+    {
+      "id": "zheng-dun-dang-de-zuo-feng",
+      "title": "整顿党的作风",
+      "year": "1942年2月1日",
+      "date": "1942-02",
+      "volume": "第三卷",
+      "tags": [
+        "作风",
+        "理论联系实际",
+        "组织"
+      ],
+      "file": "articles/zheng-dun-dang-de-zuo-feng.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19420201.htm",
+      "quote": "马克思列宁主义之箭，必须用了去射中国革命之的。",
+      "summary": "一九四二年整风开始，党内存在主观主义、宗派主义和党八股三股歪风：学风上重书本轻实际，党风上闹独立性、搞小圈子。毛泽东剖析主观主义的两种形态——教条主义和经验主义，指出两者都使理论与实际分离；提出有的放矢、把马列主义之箭射向中国革命之的；并主张用“惩前毖后、治病救人”的方针开展批评，达到既弄清思想又团结同志的目的。",
+      "businessAngle": "让方法论落地：每引入一个方法或工具，都配一个本周能验证的实验，跑不出结果就说明还没真正学懂。",
+      "verified": true
+    },
+    {
+      "id": "fan-dui-dang-ba-gu",
+      "title": "反对党八股",
+      "year": "1942年2月8日",
+      "date": "1942-02",
+      "volume": "第三卷",
+      "tags": [
+        "表达",
+        "沟通",
+        "产品文案"
+      ],
+      "file": "articles/fan-dui-dang-ba-gu.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19420208.htm",
+      "quote": "空话连篇，言之无物。",
+      "summary": "一九四二年延安整风中，许多文章和讲话空话连篇、装腔作势、无的放矢，群众听不懂也不愿听。毛泽东列出党八股的八大罪状，从空话连篇、装腔作势、无的放矢、语言无味，到甲乙丙丁开中药铺，逐条分析其害处，并提出解决办法：提出问题、分析问题、解决问题，要看对象说话，学习群众语言。这是毛选中关于表达与传播最直接的一篇。",
+      "businessAngle": "说人话：对外文案先删形容词和术语，按“用户的问题—你的解法—现在做什么”三段写，写完念给一个外行听。",
+      "verified": true
+    },
+    {
+      "id": "guan-yu-ling-dao-fang-fa-de-ruo-gan-wen-ti",
+      "title": "关于领导方法的若干问题",
+      "year": "1943年6月1日",
+      "date": "1943-06",
+      "volume": "第三卷",
+      "tags": [
+        "领导力",
+        "从群众中来",
+        "试点"
+      ],
+      "file": "articles/guan-yu-ling-dao-fang-fa-de-ruo-gan-wen-ti.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19430601.htm",
+      "quote": "从群众中来，到群众中去。",
+      "summary": "一九四三年根据地工作头绪繁多，领导者容易脱离群众、只凭主观发号施令。毛泽东把领导方法归结为两条：一般和个别相结合、领导和群众相结合。他要求先抓典型、突破一点取得经验，再拿到全局去推行；提出从群众中来、到群众中去，把群众分散的意见集中起来化为系统的意见，再回到群众中去宣传解释，如此循环，使领导一次比一次提高。",
+      "businessAngle": "先试点再推广：任何新流程先在一个小团队跑两周，拿到数据再全公司推，推广时由试点团队现身说法。",
+      "verified": true
+    },
+    {
+      "id": "wei-ren-min-fu-wu",
+      "title": "为人民服务",
+      "year": "1944年9月8日",
+      "date": "1944-09",
+      "volume": "第三卷",
+      "tags": [
+        "使命",
+        "价值观",
+        "用户"
+      ],
+      "file": "articles/wei-ren-min-fu-wu.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19440908.htm",
+      "quote": "因为我们是为人民服务的，所以，我们如果有缺点，就不怕别人批评指出。",
+      "summary": "一九四四年张思德在烧炭时牺牲，毛泽东在追悼会上讲话。他从队伍的性质讲起，说明共产党和八路军新四军完全是为着解放人民、彻底地为人民利益工作的；用司马迁“人固有一死”引出为人民利益而死重于泰山；又讲因为我们是为人民服务的，就不怕别人批评指出，只要说得对就改正。全文把宗旨落到“听取批评、改正错误”这个可检验的动作上。",
+      "businessAngle": "把用户投诉当资产：建立“说得对就改”的机制，让提出批评的客户看到改动落地并收到回复。",
+      "verified": true
+    },
+    {
+      "id": "lun-lian-he-zheng-fu",
+      "title": "论联合政府",
+      "year": "1945年4月24日",
+      "date": "1945-04",
+      "volume": "第三卷",
+      "tags": [
+        "战略",
+        "路线",
+        "宗旨"
+      ],
+      "file": "articles/lun-lian-he-zheng-fu.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19450424.htm",
+      "quote": "全心全意地为人民服务，一刻也不脱离群众；一切从人民的利益出发，而不是从个人或小集团的利益出发；向人民负责和向党的领导机关负责的一致性；这些就是我们的出发点。",
+      "summary": "一九四五年抗战胜利前夜，中国面临两种前途的选择。毛泽东在七大政治报告中总结二十四年的经验，提出放手发动群众、壮大人民力量、在党的领导下打败日本侵略者、建立新民主主义中国的总路线；系统阐述新民主主义国家的政治、经济、文化纲领，并把理论和实践相结合、和人民群众紧密联系、自我批评概括为三大作风，把全心全意为人民服务定为出发点。",
+      "businessAngle": "把宗旨写成可检验承诺：列出三条对客户的具体承诺，公开出来并接受追责，每季度公布达成情况。",
+      "verified": true
+    },
+    {
+      "id": "yu-gong-yi-shan",
+      "title": "愚公移山",
+      "year": "1945年6月11日",
+      "date": "1945-06",
+      "volume": "第三卷",
+      "tags": [
+        "坚持",
+        "长期主义",
+        "动员"
+      ],
+      "file": "articles/yu-gong-yi-shan.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19450611.htm",
+      "quote": "下定决心，不怕牺牲，排除万难，去争取胜利。",
+      "summary": "一九四五年七大闭幕，毛泽东用《列子》里愚公移山的故事作结：愚公每天挖山不止，感动上帝派两个神仙搬走两座山。他说明中国也有两座压在中国人民头上的大山，一座叫帝国主义，一座叫封建主义，共产党早就下了决心要挖掉它们，一定要坚持下去、一定要不断地工作，也会感动全中国人民大众。全文讲的是长期目标如何靠持续的具体行动兑现。",
+      "businessAngle": "长期目标拆成每日动作：把三年目标写成每天必做的一件小事，用连续完成天数衡量进展，而不是季度末补账。",
+      "verified": true
+    },
+    {
+      "id": "kang-ri-zhan-zheng-sheng-li-hou-de-shi-ju-he-wo-men-de-fang-zhen",
+      "title": "抗日战争胜利后的时局和我们的方针",
+      "year": "1945年8月13日",
+      "date": "1945-08",
+      "volume": "第四卷",
+      "tags": [
+        "形势判断",
+        "策略",
+        "底线"
+      ],
+      "file": "articles/kang-ri-zhan-zheng-sheng-li-hou-de-shi-ju-he-wo-men-de-fang-zhen.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19450813.htm",
+      "quote": "针锋相对，寸土必争。",
+      "summary": "一九四五年日本投降前后，蒋介石一面电邀谈判一面加紧备战，党内对局势估计不足。毛泽东分析抗战胜利后的时局，指出内战危险严重存在，提出针锋相对的方针：寸土必争，用斗争求和平；同时说明我们不但必须打败蒋介石，而且能够打败他，因为人心向背和力量对比都在变化。文章强调既不被胜利冲昏头，也不因对手压力而退让，要用斗争去争取和平，而不是指望对手发善心。",
+      "businessAngle": "谈判前先算清底线：列出你最不能让的三件事和可以交换的三件事，写成一页纸再上桌，中途不临时改。",
+      "verified": true
+    },
+    {
+      "id": "mei-guo-ji-zhe-an-na-liu-yi-si-si-te-lang-de-tan-hua",
+      "title": "和美国记者安娜·刘易斯·斯特朗的谈话",
+      "year": "1946年8月6日",
+      "date": "1946-08",
+      "volume": "第四卷",
+      "tags": [
+        "竞争",
+        "强弱转化",
+        "心态"
+      ],
+      "file": "articles/mei-guo-ji-zhe-an-na-liu-yi-si-si-te-lang-de-tan-hua.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19460806.htm",
+      "quote": "一切反动派都是纸老虎。",
+      "summary": "一九四六年内战全面爆发前夕，国内外普遍高估美国支持的国民党力量。毛泽东对斯特朗提出“一切反动派都是纸老虎”，说明反动派脱离人民、外强中干，从长远看真正强大的力量属于人民；同时又强调在每一个具体斗争上要重视敌人，集中优势兵力打歼灭战。这一段把长期判断上的藐视与短期操作上的重视明确分开：真正强大的力量不是反动派，而是人民。",
+      "businessAngle": "长期看趋势、短期拼具体：对行业长期判断可以乐观，但每个项目按“先打赢能赢的小仗”排期，把资源压在能赢的那一单上。",
+      "verified": true
+    },
+    {
+      "id": "mu-qian-xing-shi-he-wo-men-de-ren-wu",
+      "title": "目前形势和我们的任务",
+      "year": "1947年12月25日",
+      "date": "1947-12",
+      "volume": "第四卷",
+      "tags": [
+        "战略",
+        "原则",
+        "执行"
+      ],
+      "file": "articles/mu-qian-xing-shi-he-wo-men-de-ren-wu.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19471225.htm",
+      "quote": "不打无准备之仗，不打无把握之仗，每战都应力求有准备，力求在敌我条件对比下有胜利的把握。",
+      "summary": "一九四七年十二月，解放战争转入战略进攻，全国胜利的前景出现，党内对政策界限把握不一。毛泽东在中央会议上分析形势，宣布中国革命已经到达转折点，提出十大军事原则，从先打分散孤立之敌、集中优势兵力各个歼灭，到以俘获敌人的装备补充自己；同时阐述土地改革、工商业政策和统一战线，把军事胜利转化为制度安排；十大原则的核心是集中优势兵力、各个歼灭敌人。",
+      "businessAngle": "把经验变成原则清单：复盘时改写为十条以内可执行的原则，要求新人在同类决策上照着做。",
+      "verified": true
+    },
+    {
+      "id": "jiang-ge-ming-jin-xing-dao-di",
+      "title": "将革命进行到底",
+      "year": "1948年12月30日",
+      "date": "1948-12",
+      "volume": "第四卷",
+      "tags": [
+        "决策",
+        "彻底性",
+        "止损"
+      ],
+      "file": "articles/jiang-ge-ming-jin-xing-dao-di.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19481230.htm",
+      "quote": "那蛇受了暖气就苏醒了，等到回复了它的天性，便把它的恩人咬了一口，使他受了致命的伤。",
+      "summary": "一九四九年新年，国民党在军事失败后提出和平谈判以争取喘息时间，一些人对敌人产生同情。毛泽东用希腊农夫与蛇的寓言说明：对已经证明会咬人的东西讲好心肠，只会让自己受害；革命必须进行到底，不能半途而废。文章回顾两年半战争的根本变化，指出中国人民将在解放战争中获得最后胜利，要求把胜利推进到全国范围，不在胜利前夜给对手喘息机会。",
+      "businessAngle": "及时止损：对已经证明会反噬的合作或渠道，事先写好退出条件和时间点，到期就执行，不因为情面拖延。",
+      "verified": true
+    },
+    {
+      "id": "dang-wei-hui-de-gong-zuo-fang-fa",
+      "title": "党委会的工作方法",
+      "year": "1949年3月13日",
+      "date": "1949-03",
+      "volume": "第四卷",
+      "tags": [
+        "管理",
+        "会议",
+        "抓重点"
+      ],
+      "file": "articles/dang-wei-hui-de-gong-zuo-fang-fa.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19490313.htm",
+      "quote": "抓紧中心工作，又要围绕中心工作而同时开展其它方面的工作。",
+      "summary": "一九四九年三月七届二中全会，党即将接管全国政权，委员会内部如何议事决策成了新问题。毛泽东用十二条讲工作方法：书记要当好“班长”，把问题摆到桌面上来，互通情报，不懂得和不了解的东西要问下级，学会“弹钢琴”，抓紧中心工作，胸中有“数”，要“安民告示”，注意团结那些和自己意见不同的同志。这是毛选中最直接的一份管理操作手册。",
+      "businessAngle": "开会要有章法：会前发议程和材料（安民告示），会上只解决分歧，会后明确唯一负责人和截止时间。",
+      "verified": true
+    },
+    {
+      "id": "lun-ren-min-min-zhu-zhuan-zheng",
+      "title": "论人民民主专政",
+      "year": "1949年6月30日",
+      "date": "1949-06",
+      "volume": "第四卷",
+      "tags": [
+        "组织",
+        "规则",
+        "长期"
+      ],
+      "file": "articles/lun-ren-min-min-zhu-zhuan-zheng.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19490630.htm",
+      "quote": "严重的经济建设任务摆在我们面前。",
+      "summary": "一九四九年建国前夕，国家性质和各阶级地位需要讲清楚。毛泽东总结近代以来中国人寻找真理的历程，说明资产阶级共和国方案在中国行不通，工人阶级领导的以工农联盟为基础的人民民主专政是历史的结论；并解释对人民内部实行民主、对反动派实行专政这两面，以及严重的经济建设任务要求我们学会自己不懂的东西、向一切内行的人学习。",
+      "businessAngle": "制度先于规模：扩张前把权责、分成、退出规则写清楚，让团队靠规则运转，而不是靠人情维系。",
+      "verified": true
+    },
+    {
+      "id": "lun-shi-da-guan-xi",
+      "title": "论十大关系",
+      "year": "1956年4月25日",
+      "date": "1956-04",
+      "volume": "第五卷",
+      "tags": [
+        "结构",
+        "资源配置",
+        "平衡"
+      ],
+      "file": "articles/lun-shi-da-guan-xi.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19560425.htm",
+      "quote": "一切民族、一切国家的长处都要学，政治、经济、科学、技术、文学、艺术的一切真正好的东西都要学。",
+      "summary": "一九五六年社会主义改造基本完成，照抄苏联模式开始暴露问题。毛泽东以十个关系为纲，逐对分析重工业和轻工业农业、沿海和内地、经济建设和国防建设、国家生产单位和个人、中央和地方等关系，主张用两条腿走路、兼顾各方，并明确提出一切民族一切国家的长处都要学，包括资本主义国家的先进科学技术和企业管理方法中合乎科学的部分。",
+      "businessAngle": "资源别押单点：把预算按“主业—新业务—基础设施”三档分配并季度调整，定期派人学外部同行做得好的地方。",
+      "verified": true
+    },
+    {
+      "id": "guan-yu-zheng-que-chu-li-ren-min-nei-bu-mao-dun-de-wen-ti",
+      "title": "关于正确处理人民内部矛盾的问题",
+      "year": "1957年2月27日",
+      "date": "1957-02",
+      "volume": "第五卷",
+      "tags": [
+        "矛盾",
+        "边界",
+        "内部关系"
+      ],
+      "file": "articles/guan-yu-zheng-que-chu-li-ren-min-nei-bu-mao-dun-de-wen-ti.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-19570227.htm",
+      "quote": "百花齐放、百家争鸣的方针，是促进艺术发展和科学进步的方针，是促进我国的社会主义文化繁荣的方针。",
+      "summary": "一九五七年社会主义改造完成后，社会矛盾的性质发生变化，许多干部仍用对敌斗争的办法处理内部意见分歧。毛泽东区分敌我矛盾和人民内部矛盾这两类性质不同的矛盾，主张用民主的、说服教育的方法解决后者，提出“百花齐放、百家争鸣”“长期共存、互相监督”，并说明判断言论是非的六条标准，为处理内部分歧划出边界。文章的方法论是先定性、再定方法，避免把内部问题敌我化。",
+      "businessAngle": "区分“立场之争”和“方法之争”：团队内部意见分歧用数据和试验解决，不上升为忠诚问题，也不轻易动组织处分。",
+      "verified": true
+    },
+    {
+      "id": "zhong-guo-ge-ming-zhan-zheng-de-zhan-lue-wen-ti",
+      "title": "中国革命战争的战略问题",
+      "year": "1936年12月",
+      "date": "1936-12",
+      "volume": "第一卷",
+      "tags": [
+        "战略",
+        "复盘",
+        "规律"
+      ],
+      "file": "articles/zhong-guo-ge-ming-zhan-zheng-de-zhan-lue-wen-ti.md",
+      "sourceUrl": "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193612.htm",
+      "quote": "读书是学习，使用也是学习，而且是更重要的学习。",
+      "summary": "一九三六年红军到达陕北，党内对革命战争的规律认识不一，既有轻视战略研究的经验主义，也有照搬外国经验的教条主义。毛泽东系统论述战争的规律、革命战争的规律、中国革命战争的规律三个层次，强调研究战争必须着眼其特点和发展；并以反“围剿”的经验说明战略防御中的战役进攻、集中优势兵力、打得赢就打打不赢就走等原则，是毛选里方法论色彩最重的一篇。",
+      "businessAngle": "先研究规律再谈打法：进入新市场前，写出这个行业的三条规律和你的一条不同做法，再决定从哪一步切入。",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+# dsh-plugin-maoxuan-pet bundle patch
+#
+# 1) 插件的 Host 行（同时通过 package.json 的 dsh.client 加载 client.js）
+# 2) 毛选创业参谋 agent preset：新建会话选择后可直接问“根据毛选我应该怎么做”
+#
+# 语料与 skill 的绝对路径由 index.js 在运行时按自身包目录计算并注册到
+# skill 注册表（maoxuan-vademecum），因此这里不需要硬编码用户目录。
+
+- insert:
+    - id: dsh-maoxuan-pet
+      name: dsh-plugin-maoxuan-pet
+      config:
+        enabled: true
+        everySeconds: 3600
+        firstDelaySeconds: 90
+        quietHours: [2, 8]
+        maxBubbles: 40
+        headless: true
+        profile: headless
+        timeoutMs: 180000
+        businessContext: |-
+          用户是一位正在创业的独立开发者/小团队创始人，关心客户获取、现金流、
+          产品验证与团队执行；经常面对“想得多、做得少”和“凭印象拍板”的问题。
+
+    - id: preset-maoxuan-pet
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: maoxuan-pet
+        name: 毛选创业参谋
+        description: 内置《毛泽东选集》公开语料；回答创业问题时先引原文，再落到你的处境
+        order: 12
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |-
+                你是「毛选创业参谋」：一位读过《毛泽东选集》的创业顾问，用毛选的方法论帮用户判断生意上的具体问题。
+
+                工作方式：
+                1. 先把用户的问题翻译成一个具体的经营判断（谁、什么处境、要决定什么）。
+                2. 再调 `skill` 工具加载 `maoxuan-vademecum`，按其中的语料索引，用 `read` 工具打开相关篇章的公开全文，取一句逐字原文。
+                3. 回答结构固定：原文金句（篇名 + 写作时间）→ 当时面对的问题与论证 → 提炼出的方法 → 落到用户当前处境的具体判断 → 今天 24 小时内可执行、可验证的一步。
+
+                硬性约束：
+                - 引号里的原文必须逐字来自语料文件，不得拼接不同段落，不得凭记忆编造；核不到就说明“未核到原文”，不要加引号。
+                - 明确区分历史情境与现代商业，把类比写成“同构的判断方法”，不要写成必胜保证。
+                - 不把客户、员工、合作方或竞争者比作战争中的敌人；不用口号替代分析；不给违法、欺诈、压榨或伤害他人的建议。
+                - 用户要的是判断和行动，不是背书。可以指出他哪里在自我安慰，但要说清依据。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
