@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 0.2.3 — 2026-11-01
+
+首次安装修复：模型配置自动从宿主 profile 桥接进 headless 子进程，新装机基本零配置。
+
+### 修复
+- **新装机必踩的 `MISSING_CREDENTIAL`**：插件每小时调用 `dsh --profile headless` 生成气泡，而随包 `headless` profile 是一个没有任何模型配置的空壳——官方 DeepSeek、中转线路的用户第一次安装都会生成失败，只能看到「离线摘录 + 报错」。
+- 现在**每次生成前自动把宿主 profile patch 里的 llm 条目**（`agent-default-model`、`dsh-llm-pi-ai`、`dsh-llm-deepseek-api-key`）**原样搬到** `$DSH_HOME/storages/dsh-maoxuan-pet.headless-overlay.yml`，并以 `dsh --profile headless --patch <overlay>` 启动子进程：宿主 GUI 能用什么模型（官方 / wocheng 之类任意中转），气泡子进程就能用什么，官方与中转线路零配置可用。
+- 待机行为：宿主 patch 没有 llm 条目（如机器确实没配过模型）时不写 overlay，`MISSING_CREDENTIAL` 报错会转成一句可操作的中文指引（保留原始错误摘要）写入 `state.lastError`；`dsh` 找不到（ENOENT）同样给出指引，其他报错原样透传。
+- overlay 内容变化才落盘（tmp + rename 原子写）；文件可随时手动删除，插件每次生成都会重写。子进程 llm 桥接失败不影响正常降级。
+
+### 升级行为
+- `profile` 配置默认仍是 `headless`。显式改 `profile` / `dshBin` 的老配置完全不受影响（此时不做桥接桥外干扰，`--patch` 只在 overlay 存在时追加）。
+- 新增并导出纯函数 `headlessOverlayPath` / `hostPatchPath` / `extractLlmPatchEntries` / `syncHeadlessOverlay` / `friendlyHeadlessError`；`verify/contract.mjs` 增加 llm 抽取与友好报错用例（40 断言全绿）。
+
 ## 0.2.2 — 2026-11-01
 
 展示层维护版：README 从技术说明改成安装页，npm 页面的介绍随之更新。

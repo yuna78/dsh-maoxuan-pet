@@ -51,7 +51,8 @@ dsh plugin --profile web add dsh-plugin-maoxuan-pet
     maxBubbles: 40
     headless: true          # false = 只用本地摘录，不花模型调用
     dshBin: dsh
-    profile: headless
+    profile: headless       # v0.2.3 起会自动把宿主 GUI 的模型配置桥接进来
+                            # （官方/中转线路通用，无需手动配置）
     timeoutMs: 180000
     businessContext: |-
       用户是一位正在创业的独立开发者……

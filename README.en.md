@@ -55,7 +55,8 @@ fan-made character; not affiliated with DeepSeek.
     maxBubbles: 40
     headless: true          # false = only local excerpts, zero model calls
     dshBin: dsh
-    profile: headless
+    profile: headless       # since v0.2.3 the host GUI's model config is
+                            # bridged in automatically (official/relay, no setup)
     timeoutMs: 180000
     businessContext: "40, indie developer, small-tool SaaS"
 ```

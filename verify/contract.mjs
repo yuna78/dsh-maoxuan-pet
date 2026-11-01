@@ -12,7 +12,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 
-import { ROUTES, normaliseConfig, resolveDshHome, resolveStatePath, isQuietAt, quietEnd, startOfLocalDay, stripFrontmatter, extractJson, TEMPLATES, TEMPLATE_LABEL, AXES, MAX_BUBBLE_CHARS, LIMITS, isVerbatim, clipAtBoundary, extractExcerpt, pickTemplate, deriveAxis, normaliseGenerated, fitLesson, migrateBubble, longestSharedRun, offlineBubble, buildPrompt, pickArticle, validateCorpus, LEGACY_AXES, coerceAxis } from '../index.js';
+import { ROUTES, friendlyHeadlessError, extractLlmPatchEntries, headlessOverlayPath, hostPatchPath, readCredentialRefs, childHeadlessEnv, normaliseConfig, resolveDshHome, resolveStatePath, isQuietAt, quietEnd, startOfLocalDay, stripFrontmatter, extractJson, TEMPLATES, TEMPLATE_LABEL, AXES, MAX_BUBBLE_CHARS, LIMITS, isVerbatim, clipAtBoundary, extractExcerpt, pickTemplate, deriveAxis, normaliseGenerated, fitLesson, migrateBubble, longestSharedRun, offlineBubble, buildPrompt, pickArticle, validateCorpus, LEGACY_AXES, coerceAxis } from '../index.js';
 
 /** Local-time helper: avoids UTC/local confusion in the quiet-window tests. */
 const local = (y, m, d, h, min = 0) => new Date(y, m - 1, d, h, min, 0, 0);
@@ -62,6 +62,42 @@ test('normaliseConfig: 空配置返回契约 §2 的默认值', () => {
   assert.equal(cfg.modelHint, '');
   assert.equal(typeof cfg.dailyLimit, 'number');
   assert.ok(cfg.dailyLimit >= 0);
+});
+
+test('llm 桥接 (v0.2.3): 宿主 patch 的 llm 行原样抽出，无关行不动', () => {
+  const sample = [
+    '- id: ui-settings-general',
+    '  name: "@x/y"',
+    '  config: {hello: 1}',
+    '- id: agent-default-model',
+    '  name: "@deepseek-ai/dsh-agent-default-model"',
+    '  config:',
+    '    provider: wocheng',
+    '    model: gpt-6.1-sol',
+    "- id: llm-pi-ai",
+    "  name: '@deepseek-ai/dsh-llm-pi-ai'",
+    '  config:',
+    '    providers:',
+    '      wocheng:',
+    '        apiKeyEnv: WOCHENG_API_KEY',
+    '- insert:',
+    '    - id: something',
+    '      name: unrelated',
+    '- id: llm-deepseek',
+    '  name: "@deepseek-ai/dsh-llm-deepseek-api-key"',
+    '  config:',
+    '    baseURL: https://api.deepseek.com/v1',
+    '',
+  ].join('\n');
+  const entries = extractLlmPatchEntries(sample);
+  assert.equal(entries.length, 3);
+  assert.match(entries[0], /agent-default-model/);
+  assert.match(entries[0], /model: gpt-6\.1-sol/);
+  assert.match(entries[1], /WOCHENG_API_KEY/);
+  assert.match(entries[2], /dsh-llm-deepseek-api-key/);
+  assert.ok(!entries.some((e) => e.includes('unrelated')), '无关条目不被搬运');
+  assert.deepEqual(extractLlmPatchEntries('- a: 1\n- b: 2'), [], '无 llm 条目时返回空');
+  assert.deepEqual(extractLlmPatchEntries(''), [], '空文件返回空');
 });
 
 test('normaliseConfig: 用户配置被保留，字符串去空白', () => {
@@ -618,4 +654,30 @@ test('ROUTES: 与契约 §3 的五条路由完全一致', () => {
     asset: '/api/dsh-maoxuan-pet.asset',
     corpus: '/api/dsh-maoxuan-pet.corpus',
   });
+});
+
+test('friendlyHeadlessError: MISSING_CREDENTIAL 转成可操作的指引', () => {
+  const out = friendlyHeadlessError('headless 退出码 1：dsh: MISSING_CREDENTIAL: llm-deepseek: no API key for provider route "deepseek-official"');
+  assert.match(out, /Models/);
+  assert.match(out, /profile/);
+  assert.equal(friendlyHeadlessError('headless 超时（180s）'), 'headless 超时（180s）', '其他错误原样透传');
+});
+
+test('childHeadlessEnv (v0.2.3): 只补 overlay 声明且缺失的 apiKeyEnv 名', () => {
+  const DSH_HOME_DIR = '/tmp/maoxuan-no-such-home';
+  const overlay = "- id: llm-pi-ai\n  config:\n    providers:\n      wocheng:\n        apiKeyEnv: WOCHENG_API_KEY\n";
+  const env = childHeadlessEnv(overlay, {
+    HOME: '/tmp/maoxuan-no-such-home',
+    DSH_HOME: DSH_HOME_DIR,
+    OTHER: '1',
+  });
+  assert.equal(env.DSH_MAOXUAN_PET_CHILD, '1');
+  assert.equal(env.OTHER, '1');
+  assert.equal('WOCHENG_API_KEY' in env, false, '无 refs 文件时不注入');
+  const withKey = childHeadlessEnv(overlay, {
+    HOME: '/tmp/maoxuan-no-such-home',
+    DSH_HOME: DSH_HOME_DIR,
+    WOCHENG_API_KEY: 'user-set',
+  });
+  assert.equal(withKey.WOCHENG_API_KEY, 'user-set', '用户显式 env 优先');
 });

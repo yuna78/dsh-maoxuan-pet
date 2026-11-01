@@ -16,7 +16,8 @@
         quietHours: [2, 8]
         maxBubbles: 40
         headless: true
-        profile: headless
+        # 不写死 profile：插件默认跟随宿主的 DSH_PROFILE（宿主能用什么模型，
+        # 子进程就能用什么模型）。想强制某个 profile 再显式写 profile: xxx。
         timeoutMs: 180000
         businessContext: |-
           用户是一位正在创业的独立开发者/小团队创始人，关心客户获取、现金流、
