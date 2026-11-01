@@ -1,5 +1,7 @@
 # dsh-maoxuan-pet · 鲸鱼娘·小毛
 
+[![verify](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml/badge.svg)](https://github.com/yuna78/dsh-maoxuan-pet/actions/workflows/verify.yml) [![npm](https://img.shields.io/npm/v/dsh-plugin-maoxuan-pet.svg)](https://www.npmjs.com/package/dsh-plugin-maoxuan-pet)
+
 > 一只穿红军制服、抱着《毛泽东选集》的鲸鱼娘，住在 DSH 的 Web 界面右下角。
 > 每小时读一篇毛选，把它变成一句针对**你的**创业处境的思想 + 一句督促，
 > 并且随时可以开一个新会话问她：根据毛选，我这一步该怎么走。

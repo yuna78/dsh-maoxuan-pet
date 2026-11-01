@@ -1,0 +1,39 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.x', '24.x']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # 插件零第三方依赖：没有 npm install，直接跑 Node 内置测试。
+      - name: 语法与结构检查（24 项）
+        run: node verify/smoke.mjs
+
+      - name: 纯函数契约单测（38 项）
+        run: node verify/contract.mjs
+
+      - name: 假 ctx 端到端（18 项，不联网 / 不起子进程 / 不花模型调用）
+        run: node verify/host.test.mjs
+
+      - name: 语料覆盖审计（金句必须逐字命中）
+        run: node scripts/audit-corpus-coverage.mjs
+
+      - name: 打包清单核对（不含 .dsh-dev / assets/raw / verify）
+        run: |
+          npm pack --dry-run 2>&1 | tee /tmp/pack.txt
+          ! grep -qE '(^| )(\.dsh-dev|assets/raw|verify)/' /tmp/pack.txt
